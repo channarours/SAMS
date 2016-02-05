@@ -1,0 +1,559 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml" 
+    xmlns:og = "http://ogp.me/ns#"
+	  xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    
+    <title>Log-in</title>
+    <meta name="Description" content="" />
+    <meta name="Keywords" content="" /> 
+    <meta name="msvalidate.01" content="62BD51F0213D4D7A81D09D7E79E85197" />
+       
+        <meta property="fb:app_id"             content="260491894034757" />
+        <meta property="og:site_name"          content="ICEPAY" />
+        <meta property="og:type"               content="website" /> 
+        <meta property="og:url"                content="https://portal.icepay.com/EN/Login" /> 
+        <meta property="og:image"              content="http://www.icepay.com/images/logo-icepay-fb.png" />
+        <meta property="og:title"              content="Log-in" />
+        <meta property="og:description"        content="" /> 
+    
+    <link rel="shortcut icon" href="/favicon.ico?v=2" type="image/x-icon" />
+    <link href="/css/fonts.css?20150819" media="all" rel="Stylesheet" type="text/css" id="fonts"/>
+    <link href="/css/master.css?20150819" media="all" rel="Stylesheet" type="text/css" id="mastercss"/>
+    <!-- L:EN -->
+    
+    
+    <script type="text/javascript" src="/scripts/jquery.min.js"></script>
+    <script type="text/javascript" src="/Scripts/jTranslations.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.cookie.js"></script>
+    <script type="text/javascript" src="/Scripts/jquery.cookiecuttr.js"></script>
+    <script type="text/javascript" src="/scripts/plusone.js"></script>
+    <script type="text/javascript" src="/scripts/directpay.js"></script>
+    <script type="text/javascript" src="/scripts/dpg.js"></script>
+    <script src="/scripts/jquery.zrssfeed.js" type="text/javascript"></script>
+    <script type="text/javascript" src="/scripts/jquery.vticker.js"></script>
+    
+     
+    <script type="text/javascript">     
+        //if (jQuery.cookie('cc_cookie_accept') == "cc_cookie_accept") {
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-5423567-10']);
+            _gaq.push(['_setDomainName', '']);
+            _gaq.push(['_setAllowLinker', true]);
+            _gaq.push(['_trackPageview']);
+        //}
+
+        (function () {
+            
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            
+        })();
+
+    function recordOutboundLink(link, category, action) {
+        try {
+                _gat._getTrackerByName()._trackEvent(category, action);
+            }   
+        catch (err) { }
+    }
+
+    //Retrieving some web.config file variables to be used in the DPG and Directpay projects
+    var dpgUrl = "portal2";
+    var directpayUrl = "directpay";
+    var faviconPath = "https://directpay.icepay.nl/images/favicon.ico?v=2";
+    var loginDirectpayUrl = "https://directpay.icepay.nl/NL/Login?origin=directpay.icepay.nl";
+    $(document).ready(function () {
+        //Apply DPG changes if url is the DPG one
+        if (window.location.href.indexOf(dpgUrl) > -1) {
+            ApplyDPGChanges();
+            $('body').show();
+        }
+        //Apply DirectPay changes if url is the directpay one
+        if (window.location.href.indexOf(directpayUrl) > -1) {
+            ApplyDirectPayChanges();
+            $('body').show();
+        }
+        $('body').show();//Force show the body
+    });   
+    </script>
+
+   
+    
+
+
+    
+
+
+</head>
+
+
+    
+
+<body id="global"  {
+     class="icepayloginplatform"
+    }
+   >
+
+        <!-- cookiediv!-->
+    <script>
+        $(function () {
+            $.cookieCuttr();
+            var _d = '.first' + 'EN';
+            var _t = $(_d).attr("href");
+            $("#BreadCrumbHome").attr("href", _t);
+            var _o = $(".mainnavitem").first();
+            $(_o).children().attr("href", _t);
+            $("#BreadCrumbHome").attr("href", "/");
+        });
+</script>
+<!-- einde cookiediv!-->
+
+
+
+    <a name="top" id="top"></a>
+    <style>
+        div .directpay_colors {
+            width: 100%;
+            position:absolute; 
+            top: 175px;
+        }
+
+        .color_1 {
+            width: 25%;
+            background-color: #0071b9;
+            height: 25px;
+        }
+
+        .color_2 {
+            width: 25%;
+            background-color: #02a8c5;
+            height: 25px;
+        }
+
+        .color_3 {
+            width: 25%;
+            background-color: #4cd8dc;
+            height: 25px;
+        }
+
+        .color_4 {
+            width: 25%;
+            background-color: #a8e0d4;
+            height: 25px;
+        }
+    </style>
+
+    <script type="text/javascript">$('body').hide();</script> 
+    <div id="wrap">
+        <div id="header">
+            
+            <div id="searchArea">
+
+                    <ul id="socialicons">
+                        <li id="fb" class="facebook"><a href="http://www.facebook.com/ICEPAY" target="_blank" >Facebook</a></li>
+                        <li id="tw" class="twitter"><a href="http://twitter.com/icepay_nl" target="_blank" >Twitter</a></li>
+                        <li id="lnk" class="linkedin"><a href="http://www.linkedin.com/company/icepay" target="_blank" >LinkedIn</a></li>
+                        <li id="yt" class="youtube"><a href="http://www.youtube.com/ICEPAYonlinepayments" target="_blank" >YouTube</a></li>
+                    </ul>
+                <script>
+                    $(function () {
+                        $("#fb").click(function () {
+                            recordOutboundLink(this, 'SocialLinks', 'http://www.facebook.com/ICEPAY');
+                        });
+                        $("#tw").click(function () {
+                            recordOutboundLink(this, 'SocialLinks', 'http://twitter.com/icepay_nl');
+                        });
+                        $("#lnk").click(function () {
+                            recordOutboundLink(this, 'SocialLinks', 'http://www.linkedin.com/company/icepay');
+                        });
+                        $("#yt").click(function () {
+                            recordOutboundLink(this, 'SocialLinks', 'http://www.youtube.com/ICEPAYonlinepayments');
+                        });
+                    });
+                </script>
+
+
+
+    <!--lang2-->
+                    <a href="/NL/Login?origin=portal.icepay.com"  
+                        onclick="_gaq.push(['_link', '/NL/Login?origin=portal.icepay.com']); return false;"
+                        title="View this website in English"><span class="nl" id="language">NL</span></a>
+                    <a href="/FR/Login?origin=portal.icepay.com"  
+                        onclick="_gaq.push(['_link', '/FR/Login?origin=portal.icepay.com']); return false;"
+                        title="Voir ce site en néerlandais"><span class="fr" id="language">FR</span></a>
+
+                    <span class="googleplus1">
+                        <g:plusone size="medium" count="false"></g:plusone>
+                    </span>
+                    <script type="text/javascript">
+                         /* <![CDATA[ */
+                         if (jQuery.cookie('cc_cookie_accept') == "cc_cookie_accept") {
+                             var google_conversion_id = 952241931;
+                             var google_conversion_label = "60sWCL2kkgkQi56IxgM";
+                             var google_custom_params = window.google_tag_params;
+                             var google_remarketing_only = true;
+                         }
+                        /* ]]> */
+                    </script>
+                    <script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js">
+                    </script>
+                    <noscript>
+                        <div style="display: inline;">
+                            <img height="1" width="1" style="border-style: none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/952241931/?value=0&amp;label=60sWCL2kkgkQi56IxgM&amp;guid=ON&amp;script=0" />
+                        </div>
+                    </noscript>
+                     <div id="searchwrapper">
+                        <form method="post" id="searchform" action="/EN/Search">
+                           <fieldset class="search">
+                            <input type="text" class="searchbox" name="search" value="" />
+                            <input type="image" src="/images/trans-submit.png" class="searchbox_submit" value="" />
+                           </fieldset>
+                        </form>
+                    </div>  
+            </div>
+            <!--div id="hiringDiv-en"></div-->        
+            <!-- End Login Area -->
+            <div id="menuNav" class="wrapperNav">
+                <div id="droplinetabs1" class="droplinetabs">
+                    <ul class="top">
+                        <li id="account-logo" class="logo">
+                            <a href="/">Dutch Payment Service Provider | ICEPAY Home</a></li>
+                       
+                    </ul>
+                </div>
+            </div>
+            <div id="wrapBreadcrumbs">
+                <span>You are here:</span>
+                <ul id="breadcrumbs">
+                    <li><a id="BreadCrumbHome" href="">Home</a></li>
+                    
+                </ul>
+                
+
+<a id="lgin" href="https://portal.icepay.com/EN/Login?origin=portal.icepay.com" class="whiteButt" ><span>Log-in</span></a>
+<a href="/contact" class="whiteButt"><span>Contact</span></a>
+<script type="text/javascript">
+    $(function () {
+        $("#lgin").click(function () {
+            //_gaq.push(['_link', 'https://portal.icepay.com/EN/Login?origin=portal.icepay.com']);
+            //return false;
+        });
+        $("#mkac").click(function () {
+            //_gaq.push(['_link', 'https://portal.icepay.com/EN/Registration/Register?origin=portal.icepay.com']);
+            //return false;
+        });
+    });
+</script>
+	                <a id="back-website" href="https://icepay.com" class="whiteButt" target="_blank"><span>Back to the ICEPAY website</span></a>
+                
+            </div>
+            <!-- End breadcrumbs-->
+        </div>
+        <!-- End Header -->
+        <div id="main">
+            
+            
+            
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.cookie.js"></script>
+<script type="text/javascript" src="/Scripts/jquery.cookiecuttr.js"></script>
+<script>
+    var $j = jQuery.noConflict();
+
+    $j(document).ready(function () {
+        $j("#hdr-blue-global").remove();
+        $j("#footer").remove();
+        $j("#header").remove();
+        $j(".cc-cookies").remove();
+        $j("#mastercss").prop("disabled", "disabled");
+    })
+</script>
+
+
+
+
+<style>
+	.icepayloginplatform {
+        background-image: none;
+        background: rgb(110, 124, 139) !important;
+    }
+
+    .container-fluid .row-fluid {
+        max-width: 1200px;
+        margin: 0px auto;
+    }
+
+	.login-area .logo{
+		width: 207px;
+		height: 54px;
+		margin: auto;
+		display: block;
+				
+	}
+	form{
+		margin-top: 15px;
+	}
+	form .btn, form .login-button{
+		max-width: 100%;
+		min-width: 100%;
+		width: 100%;
+	}
+	form .login-area{
+		padding: 10px;
+	}
+	form .login-urls{
+		font-family: "Helvetica Neue Regular", Helvetica, sans-serif;
+		font-weight: 300;
+		font-size: 13px;
+		color: #0b7aae;
+		line-height: 24px;
+	}
+	.wrapper{
+		max-width: 803px;
+		background-color: #ffffff;
+		min-height: 432px;
+		box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.40);
+		-moz-box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.40);
+		-webkit-box-shadow: 0px 2px 7px rgba(0, 0, 0, 0.40);
+		background: -ms-linear-gradient(top, #fafafa 0%, #e5e5e5 100%);
+		background: -moz-linear-gradient(top, #fafafa 0%, #e5e5e5 100%);
+		background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#fafafa), color-stop(100%,#e5e5e5));
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fafafa', endColorstr='#e5e5e5',GradientType=0 );
+		border-radius: 3px;
+		-webkit-border-radius: 3px;
+		-moz-border-radius: 3px;
+		overflow: hidden;
+	}
+	.btn-login {
+		color: #fff;
+		background-image: -webkit-linear-gradient(top,#82A6C7 0,#286191 100%);
+		background-image: -o-linear-gradient(top,#82A6C7 0,#286191 100%);
+		background-image: -webkit-gradient(linear,left top,left bottom,from(#82A6C7),to(#286191));
+		background-image: linear-gradient(to bottom,#82A6C7 0,#286191 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#82A6C7', endColorstr='#286191', GradientType=0);
+		filter: progid:DXImageTransform.Microsoft.gradient(enabled=false);
+		background-repeat: repeat-x;
+		border-color: transparent transparent !important;
+		opacity: 1;
+	}
+			
+	.btn-login:hover {
+		color: #fff;
+		background-image: -webkit-linear-gradient(top,#82A6C7 0,#286191 100%) !important;
+		background-image: -o-linear-gradient(top,#82A6C7 0,#286191 100%) !important;
+		background-image: -webkit-gradient(linear,left top,left bottom,from(#82A6C7),to(#286191)) !important;
+		background-image: linear-gradient(to bottom,#82A6C7 0,#286191 100%) !important;
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#82A6C7', endColorstr='#286191', GradientType=0) !important;
+		filter: progid:DXImageTransform.Microsoft.gradient(enabled=false) !important;
+		background-repeat: repeat-x;
+		border-color: transparent !important;
+		opacity: 0.8;
+	}
+			
+	.commercial-images{
+		line-height: 15px;
+		padding-left: 0px;
+	}
+	.footer{
+		font-size: 10px;
+		line-height: 14px;
+		text-align: center;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 6px;
+		color: white;
+	}
+    .footer a {
+        color: white;
+        text-decoration: none;
+    }
+	#rem {
+		margin-left: 2px;
+		margin-top: 18px;
+		margin-bottom: 10px;
+		color: #586064;
+	}
+
+	#rem input{
+		margin: 0;
+		font-size: 100%;
+		vertical-align: middle;
+	}
+
+	#rem label{
+		font-family: "Helvetica Neue Regular", Helvetica, sans-serif;
+		font-weight: 300;
+		font-size: 13px;
+	}
+
+
+</style>
+<link href="/css/adaptive-login.css")" media="all" rel="Stylesheet" type="text/css" />
+
+<div id="hdr-blue-global">
+    <div id="content">
+        <h1 class="whiteFont">member login</h1>
+    </div>
+</div>
+
+
+    <div class="container-fluid">
+					<div class="row-fluid">
+						<div class="col-md-12">
+							<br /><br /><br /><br /><br />
+						</div>
+					</div>
+				</div>
+				<div class="container-fluid">
+					<div class="row-fluid">
+						<div class="col-md-10 col-md-offset-1 wrapper">
+<form action="/EN/Login" method="post">							    
+								<div class="row-fluid">
+									<div class="col-md-4">
+										<div class="login-area">
+											<br />
+											<img class="logo" src="/images/icepay-logo-login.png" />
+											<br />
+
+
+											<div class="form-group">
+												<div class="control-group">
+            <span class="field-validation-valid" data-valmsg-for="username" data-valmsg-replace="true"></span>
+<input class="form-control" data-val="true" data-val-required="Required field cannot be left blank" id="username" name="username" placeholder="Username" type="text" value="" />												</div>
+											</div>
+
+											<div class="form-group">
+												<div class="control-group">
+            <span class="field-validation-valid" data-valmsg-for="password" data-valmsg-replace="true"></span>
+<input class="form-control" data-val="true" data-val-required="Required field cannot be left blank" id="password" name="password" placeholder="Password" type="password" />                                                    
+												</div>
+											</div>
+								
+											<div class="control-group">
+												<div class="btn-group login-button">
+	                                                    <input class="btn btn-large btn-login" id="login-submit" type="submit" name="submit" value="Log in to ICEPAY" />
+												</div>
+											</div>
+                                            
+
+											<div id="rem" class="wrapper_remember">
+												<input type="checkbox" id="rememberUn" name="rememberUn" checked="checked">            &nbsp;
+                                                    <label for="rememberUn">Save username</label>
+											</div>
+											<div class="login-urls">
+                                                    <a id="login-website-redirect" href="http://www.icepay.com">Back to the ICEPAY website</a>
+                                                    <br />
+												<a href="/EN/resetpassword">I lost my password</a><br /> 
+                                                    <a id="login-website-registration" href="https://icepay.com/nl/en/registration/">Sign up for free</a>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-8 commercial-images">
+	                                        <a id="login-banner-commercial" href="https://icepay.com/portalbanner/commercial-EN" target="_blank" style="text-decoration: none; border: solid 0px black;" onclick="_gaq.push(['_trackEvent', 'Portal Homepage Banners', 'EN Banners', 'First Big Banner EN']);">
+    <img width="520" height="280" src="https://icepay.com/downloads/images/commercial-image-EN.jpg" />
+</a>
+										    <br />
+                                            <br />
+                                            <a id="login-banner-event" href="https://icepay.com/portalbanner/event-EN" target="_blank" style="text-decoration: none; border: solid 0px black;" onclick="_gaq.push(['_trackEvent', 'Portal Homepage Banners', 'EN Banners', 'Second Banner EN']);">
+    <img width="520" height="107" src="https://icepay.com/downloads/images/event-image-EN.jpg" />
+</a>
+										    <br />
+									</div>
+                                    <div style="clear: both; line-height: 0;">&nbsp;</div>    	
+								</div>
+    
+</form></div>
+						<div class="col-md-10 col-md-offset-1 footer">
+            <div id="copyright">&copy; ICEPAY 2016. All rights reserved - <small><a href="http://www.icepay.com/images/pdf/privacy-policy/privacy-policy-icepay-en.pdf" onclick="_gaq.push(['_trackEvent', 'Download', 'PDF', 'Download Privacy Policy PDF']);" target="_blank" rel="nofollow">Privacy Policy</a> | <a href="/images/pdf/terms-and-conditions.pdf" onclick="_gaq.push(['_trackEvent', 'Download', 'PDF', 'Download Terms And Conditions PDF']);" target="_blank" rel="nofollow">Terms of Use</a></small> </div>
+						</div>
+                        <div style="clear: both; line-height: 0;">&nbsp;</div>    	
+					</div>
+				</div>
+        </div>
+    </div> <!-- close the wrap div here -->
+
+<div id="footer">
+	<div id="footerTop">
+    	<div id="wrapperFootTop"></div>
+    </div>
+    <div id="wrapperFoot"> 
+        <div class="col1of5 first"> <!-- Start 1st column -->
+        	<h3><a href="/online-payments-accounts">Accounts</a></h3>
+			<ul>
+                
+
+                
+                    <li><a href="https://portal.icepay.com/EN/Registration/Register?origin=portal.icepay.com" onclick="_gaq.push(['_link', 'https://portal.icepay.com/EN/Registration/Register?origin=portal.icepay.com']); return false;">Create Account</a></li>
+                <li><a href="/online-payments-accounts">Plans & Pricing</a></li>
+                <li><a href="/resellers-program">Reseller Account</a></li>
+				<li><a href="/features-and-services">Features &amp; Services</a></li>
+            </ul>
+		</div><!-- End 1st column -->
+
+        <div class="col1of5"> <!-- Start 2nd column -->
+          
+            <h3><a href="/online-payment-methods-and-solutions">Payment Methods</a></h3>
+			<ul>
+                
+
+                <li><a href="/online-payment-methods-and-solutions/ideal-payments">iDEAL</a></li>
+                <li><a href="/online-payment-methods-and-solutions/paypal">PayPal</a></li>
+                <li><a href="/online-payment-methods-and-solutions/sepa-direct-debit-one-off">SEPA one-off</a></li>
+                <li><a href="/online-payment-methods-and-solutions/wire-transfer">Wire Transfer</a></li>
+                <li><a href="/online-payment-methods-and-solutions/pay-by-sms">Pay by SMS</a></li>
+                <li><a href="/online-payment-methods-and-solutions">more</a></li>
+            </ul>
+        </div> <!-- End 2nd column -->
+
+        <div class="col1of5"> <!-- Start 3rd column -->
+            <h3><a href="/webshop-modules">Webshop modules</a></h3>
+            <ul>
+
+                <li><a href="/webshop-modules/advanced-online-payment-module-magento">Magento</a></li>
+                <li><a href="/webshop-modules/online-payments-for-opencart">OpenCart</a></li>
+                <li><a href="/webshop-modules/online-payments-for-virtuemart">VirtueMart</a></li>
+                <li><a href="/webshop-modules/online-payments-for-ubercart">Ubercart</a></li>
+                <li><a href="/webshop-modules/online-payments-for-prestashop">PrestaShop</a></li>
+				<li><a href="/webshop-modules">more</a></li>
+            </ul>
+        </div> <!-- End 3rd column -->
+
+        <div class="col1of5"> <!-- Start 4th column -->
+            <h3>Miscellaneous</h3>
+        <ul>
+        	<li><a href="http://demo.icepay.com/" target="_blank">Demo Shop</a></li>
+                      
+            <li><a href="/about-icepay">About ICEPAY</a></li>
+            <li><a href="/jobs">Job opportunities</a></li>
+            
+            <li><a href="/">Home</a></li>
+        </ul>
+      </div> <!-- End 4th column -->
+
+
+            <div id="copyright">&copy; ICEPAY 2016. All rights reserved - <small><a href="/images/pdf/privacy-policy/privacy-policy-icepay-en.pdf" onclick="_gaq.push(['_trackEvent', 'Download', 'PDF', 'Download Privacy Policy PDF']);" target="_blank" rel="nofollow">Privacy Policy</a> | <a href="/images/pdf/terms-and-conditions.pdf" onclick="_gaq.push(['_trackEvent', 'Download', 'PDF', 'Download Terms And Conditions PDF']);" target="_blank" rel="nofollow">Terms of Use</a></small> </div>
+
+	</div>  <!-- End wrapper Footer--> 
+</div> <!-- End footer -->
+<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script>
+    var $j = jQuery.noConflict();
+
+    $j(document).ready(function () {
+        $j('.icepayloginplatform').css('opacity', 1);
+        $j('.icepayloginplatform').css('visibility', 'visible');
+        $j('.icepayloginplatform').css('display', 'initial');
+        $j('.icepayloginplatform').css('display', 'initial');
+    })
+</script>
+
+</body>
+<script type="text/javascript">$(document).ready(function () { $('body').show(); });</script>
+</html>
+

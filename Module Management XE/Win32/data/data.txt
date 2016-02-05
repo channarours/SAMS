@@ -1,0 +1,7 @@
+[0]={userName="home",password="home"}
+[1]={userName="pisal",password="123456"}
+[2]={userName="1",password="1"}
+[3]={userName="channa",password="channa"}
+[4]={userName="liling",password="liling"}
+[5]={userName="chetra",password="chetra"}
+[6]={userName="soknigm",password="1"}
