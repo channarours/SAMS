@@ -145,7 +145,7 @@ begin
       QueryTask:='/Create /SC '+cbbtaskType.Items[cbbtaskType.ItemIndex]+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /f';
     end;
     2 : begin // on start
-      ShowMessage('2');
+     // ShowMessage('2');
       myUtilitise.SetAutoStart_REG(AppFullPath,TaskTitle,true);
     end;
   end;
