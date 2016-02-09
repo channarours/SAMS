@@ -6,7 +6,7 @@ uses
   FormParam in 'FormParam.pas' {Param},
   Vcl.Themes,
   Vcl.Styles,
-  MySeed in 'MySeed.pas',
+  //MySeed in 'MySeed.pas',
   FormSetting in 'FormSetting.pas' {Setting};
 
 {$R *.res}

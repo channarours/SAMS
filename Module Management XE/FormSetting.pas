@@ -7,7 +7,7 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.ComCtrls,
-  Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls;
+  Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls,uUtilitise,uTaskSchedule;
 
 type
   TSetting = class(TForm)
@@ -26,7 +26,6 @@ type
     dtpSTime: TDateTimePicker;
     rgChoose: TRadioGroup;
     chklstDays: TCheckListBox;
-    lblMailTo: TLabel;
     edtadminMail: TEdit;
     btnRemove: TButton;
     btnOk: TButton;
@@ -80,21 +79,132 @@ type
     lblUsername: TLabel;
     btnServerSave: TButton;
     btnCancel: TButton;
+    chkMail: TCheckBox;
     procedure FormCreate(Sender: TObject);
     procedure tvTaskManagerClick(Sender: TObject);
     procedure tvGeneralClick(Sender: TObject);
+    procedure cbbtaskTypeChange(Sender: TObject);
+    procedure btnCancleClick(Sender: TObject);
+    procedure rgChooseClick(Sender: TObject);
+    procedure chklstDaysClick(Sender: TObject);
+    procedure dtpSStartDateChange(Sender: TObject);
+    procedure dtpSTimeChange(Sender: TObject);
+    procedure btnOkClick(Sender: TObject);
+    procedure btnRemoveClick(Sender: TObject);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
 
+
+
 var
   Setting: TSetting;
+  myUtilitise:TUtilitise;
+  mySchedule : TSchedule;
 
+  AppPath : String;
+  AppFullPath : string;
+
+  rgOption:String;
+  dtpDatePick:String;
+  dtpTimePick:String;
+  dayPick : String;
+  QueryTask:String;
 implementation
 
 {$R *.dfm}
+const
+  TaskTitle = 'SAMS'; // Task Title, use to apply task schedule setting
+
+procedure TSetting.btnCancleClick(Sender: TObject);
+begin
+  Self.Close;
+end;
+
+procedure TSetting.btnOkClick(Sender: TObject);
+var
+buttonSelected :Integer;
+begin
+  case cbbtaskType.ItemIndex of
+    0 : begin // on schedule
+      case rgChoose.ItemIndex of
+        0 : begin // One Time
+          QueryTask:='/Create /SC '+rgOption+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /ST '+dtpTimePick+' /f';
+        end;
+        1 : begin // on Daily
+          QueryTask:='/Create /SC '+rgOption+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /ST '+dtpTimePick+' /f';
+        end;
+        2 : begin // on Weekly
+          QueryTask:='/Create /SC '+rgOption+' /D '+dayPick+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /ST '+dtpTimePick+' /f';
+        end;
+      end;
+    end;
+    1 : begin // on logon
+      QueryTask:='/Create /SC '+cbbtaskType.Items[cbbtaskType.ItemIndex]+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /f';
+    end;
+    2 : begin // on start
+      ShowMessage('2');
+      myUtilitise.SetAutoStart_REG(AppFullPath,TaskTitle,true);
+    end;
+  end;
+  if cbbtaskType.ItemIndex <> 2 then
+  begin
+    buttonSelected := messagedlg('Task Updated : '+cbbtaskType.Items[cbbtaskType.ItemIndex],mtWarning, mbOKCancel, 0);
+    if buttonSelected = mrOK then
+    begin
+      mySchedule.AddTask(QueryTask);
+    end;
+  end;
+end;
+
+procedure TSetting.btnRemoveClick(Sender: TObject);
+var
+  buttonSelected :Integer;
+begin
+
+  buttonSelected := messagedlg('Task Remove',mtWarning, mbOKCancel, 0);
+      if buttonSelected = mrOK then
+        begin
+          mySchedule.RemoveTask(TaskTitle);
+          myUtilitise.RemoveEntryFromRegistry(TaskTitle);
+        end;
+end;
+
+procedure TSetting.cbbtaskTypeChange(Sender: TObject);
+var
+  itemTitle:String;
+  itemIndex:Byte;
+begin
+  itemTitle:= cbbtaskType.Items[cbbtaskType.ItemIndex];
+  itemIndex:= cbbtaskType.ItemIndex;
+  if itemIndex = 0 then
+  begin
+  {***Enable Tool Automatic Schedule block***}
+  chklstDays.Enabled:=False;
+  rgChoose.Enabled:=True;
+  dtpSStartDate.Enabled:=False;
+  dtpSTime.Enabled:=False;
+  {---Enable Tool Automatic Schedule block---}
+  end;
+
+end;
+
+procedure TSetting.chklstDaysClick(Sender: TObject);
+begin
+  dayPick:=myUtilitise.GetValueCheckListBox(chklstDays);
+end;
+
+procedure TSetting.dtpSStartDateChange(Sender: TObject);
+begin
+  dtpDatePick:=DateToStr(dtpSStartDate.Date);
+end;
+
+procedure TSetting.dtpSTimeChange(Sender: TObject);
+begin
+  dtpTimePick:=myUtilitise.ConvertTime12To24(TimeToStr(dtpSTime.time));
+end;
 
 procedure TSetting.FormCreate(Sender: TObject);
 var
@@ -110,7 +220,40 @@ begin
   pnlASchedule.Visible := False;
   pnlMailSetting.Visible := False;
   pnlModuleSetting.Visible := False;
+
+  AppPath:=ExtractFilePath(Application.ExeName);
+  AppFullPath:=Application.ExeName;
 end;
+
+procedure TSetting.rgChooseClick(Sender: TObject);
+var index:Byte;
+begin
+      index:=rgChoose.ItemIndex;
+  if  index= 2 then // weekly option
+  begin
+      rgOption:='WEEKLY';
+      chklstDays.Enabled:=True;
+      dtpSStartDate.Enabled:=False;
+      dtpSTime.Enabled:=True;
+  end
+  else
+  if index= 1 then // Daily Option
+  begin
+      rgOption:='DAILY';
+      chklstDays.Enabled:=False;
+      dtpSStartDate.Enabled:=False;
+      dtpSTime.Enabled:=True;
+  end
+  else if index = 0 then
+  begin
+      rgOption:='ONCE';
+      chklstDays.Enabled:=False;
+      dtpSStartDate.Enabled:=True;
+      dtpSTime.Enabled:=True;
+  end;
+end;
+
+
 
 procedure TSetting.tvGeneralClick(Sender: TObject);
 var
@@ -166,6 +309,14 @@ begin
       pnlErrorSetting.Visible := False;
       pnlMailSetting.Visible := False;
       pnlModuleSetting.Visible:=False;
+
+      {***Disable Tool Automatic Schedule block***}
+      chklstDays.Enabled:=False;
+      rgChoose.Enabled:=False;
+      dtpSStartDate.Enabled:=False;
+      dtpSTime.Enabled:=False;
+      {---Disable Tool Automatic Schedule block---}
+
     end
     else
     begin

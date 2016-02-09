@@ -51,11 +51,10 @@ end;
 
 function TSchedule.RemoveTask(TaskTitle: WideString): Boolean;
 begin
-  err:= StrGrab(uUlitity.DOSOUTPUT('schtasks /query /tn "'+TaskTitle+'"'),'',':',1);
-  if SameText(err,'ERROR') then
-    Result:=True
-  else
-    Result:=False;
+  TaskCompleted:= ShellExecute(0,'runas','SchTasks',StringToOleStr(' /Delete /TN "'+TaskTitle+'" /f'),nil,SW_HIDE);
+  if TaskCompleted > 32 then
+   result:=true
+   else   Result:=false;
 end;
 
 function TSchedule.TaskExist(TaskTitle: WideString): Boolean;

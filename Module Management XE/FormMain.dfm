@@ -5,13 +5,13 @@ object MainForm: TMainForm
   BorderStyle = bsSingle
   BorderWidth = 2
   Caption = 'Module Management System'
-  ClientHeight = 503
-  ClientWidth = 742
+  ClientHeight = 499
+  ClientWidth = 738
   Color = clWindow
   Constraints.MaxHeight = 1080
   Constraints.MaxWidth = 1920
-  Constraints.MinHeight = 556
-  Constraints.MinWidth = 752
+  Constraints.MinHeight = 551
+  Constraints.MinWidth = 748
   UseDockManager = True
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -32,15 +32,15 @@ object MainForm: TMainForm
   object pnlModuelInfo: TPanel
     Left = 0
     Top = 0
-    Width = 742
-    Height = 503
+    Width = 738
+    Height = 499
     Align = alClient
     TabOrder = 1
     object pnlLModule: TPanel
       Left = 1
       Top = 1
       Width = 245
-      Height = 501
+      Height = 497
       Align = alLeft
       Color = clBtnShadow
       ParentBackground = False
@@ -66,7 +66,7 @@ object MainForm: TMainForm
         Left = 1
         Top = 43
         Width = 243
-        Height = 457
+        Height = 453
         Align = alClient
         TabOrder = 1
         object lvModuleInfo: TListView
@@ -74,7 +74,7 @@ object MainForm: TMainForm
           Left = 4
           Top = 7
           Width = 235
-          Height = 446
+          Height = 442
           Margins.Top = 6
           Align = alClient
           BevelInner = bvNone
@@ -101,8 +101,8 @@ object MainForm: TMainForm
     object pnlRModule: TPanel
       Left = 246
       Top = 1
-      Width = 495
-      Height = 501
+      Width = 491
+      Height = 497
       Margins.Left = 6
       Align = alClient
       Color = clBtnShadow
@@ -112,7 +112,7 @@ object MainForm: TMainForm
         AlignWithMargins = True
         Left = 7
         Top = 3
-        Width = 486
+        Width = 482
         Height = 41
         Margins.Left = 6
         Margins.Top = 2
@@ -127,8 +127,8 @@ object MainForm: TMainForm
         AlignWithMargins = True
         Left = 6
         Top = 49
-        Width = 485
-        Height = 448
+        Width = 481
+        Height = 444
         Margins.Left = 5
         Align = alClient
         Color = clWhite
@@ -138,8 +138,8 @@ object MainForm: TMainForm
           AlignWithMargins = True
           Left = 31
           Top = 31
-          Width = 423
-          Height = 266
+          Width = 419
+          Height = 262
           Margins.Left = 30
           Margins.Top = 30
           Margins.Right = 30
@@ -157,8 +157,8 @@ object MainForm: TMainForm
             AlignWithMargins = True
             Left = 42
             Top = 58
-            Width = 339
-            Height = 152
+            Width = 335
+            Height = 148
             Margins.Left = 40
             Margins.Top = 40
             Margins.Right = 40
@@ -246,8 +246,8 @@ object MainForm: TMainForm
               end>
             TabOrder = 0
             DesignSize = (
-              339
-              152)
+              335
+              148)
             object lblName: TLabel
               Left = 6
               Top = 9
@@ -266,7 +266,7 @@ object MainForm: TMainForm
               AlignWithMargins = True
               Left = 52
               Top = 6
-              Width = 281
+              Width = 277
               Height = 23
               Margins.Left = 6
               Margins.Top = 6
@@ -303,7 +303,7 @@ object MainForm: TMainForm
               AlignWithMargins = True
               Left = 52
               Top = 41
-              Width = 281
+              Width = 277
               Height = 23
               Margins.Left = 6
               Margins.Top = 6
@@ -338,7 +338,7 @@ object MainForm: TMainForm
               AlignWithMargins = True
               Left = 52
               Top = 76
-              Width = 281
+              Width = 277
               Height = 23
               Margins.Left = 6
               Margins.Top = 6
@@ -373,7 +373,7 @@ object MainForm: TMainForm
               AlignWithMargins = True
               Left = 52
               Top = 111
-              Width = 281
+              Width = 277
               Height = 23
               Margins.Left = 6
               Margins.Top = 6
@@ -410,7 +410,7 @@ object MainForm: TMainForm
               AlignWithMargins = True
               Left = 52
               Top = 146
-              Width = 281
+              Width = 277
               Height = 23
               Margins.Left = 6
               Margins.Top = 6
@@ -432,8 +432,8 @@ object MainForm: TMainForm
           object pnlRBButton: TPanel
             AlignWithMargins = True
             Left = 5
-            Top = 213
-            Width = 371
+            Top = 209
+            Width = 367
             Height = 41
             Margins.Right = 45
             Margins.Bottom = 10
@@ -441,7 +441,7 @@ object MainForm: TMainForm
             BevelOuter = bvNone
             TabOrder = 1
             object btnSave: TButton
-              Left = 221
+              Left = 217
               Top = 0
               Width = 75
               Height = 41
@@ -451,7 +451,7 @@ object MainForm: TMainForm
               OnClick = saveModule
             end
             object btnDelete: TButton
-              Left = 296
+              Left = 292
               Top = 0
               Width = 75
               Height = 41
@@ -468,14 +468,14 @@ object MainForm: TMainForm
   object pnlMainForm: TPanel
     Left = 0
     Top = 0
-    Width = 742
-    Height = 503
+    Width = 738
+    Height = 499
     Align = alClient
     TabOrder = 0
     object pnlTop: TPanel
       Left = 1
       Top = 1
-      Width = 740
+      Width = 736
       Height = 60
       Align = alTop
       Caption = 'pnlTop'
@@ -526,7 +526,7 @@ object MainForm: TMainForm
       object pnlDate: TPanel
         Left = 251
         Top = 1
-        Width = 488
+        Width = 484
         Height = 58
         Align = alClient
         Caption = 'pnlSearch'
@@ -592,7 +592,7 @@ object MainForm: TMainForm
         object pnlinDateR: TPanel
           Left = 301
           Top = 1
-          Width = 186
+          Width = 182
           Height = 56
           Align = alClient
           BevelOuter = bvNone
@@ -601,9 +601,9 @@ object MainForm: TMainForm
           TabOrder = 1
           object btnStart: TButton
             AlignWithMargins = True
-            Left = 72
+            Left = 76
             Top = 1
-            Width = 50
+            Width = 46
             Height = 54
             Margins.Top = 1
             Margins.Bottom = 1
@@ -625,7 +625,7 @@ object MainForm: TMainForm
             AlignWithMargins = True
             Left = 128
             Top = 1
-            Width = 55
+            Width = 51
             Height = 54
             Margins.Top = 1
             Margins.Bottom = 1
@@ -648,8 +648,8 @@ object MainForm: TMainForm
     object pnlWorkArea: TPanel
       Left = 1
       Top = 61
-      Width = 740
-      Height = 441
+      Width = 736
+      Height = 437
       Margins.Left = 2
       Margins.Top = 2
       Margins.Right = 2
@@ -662,8 +662,8 @@ object MainForm: TMainForm
         AlignWithMargins = True
         Left = 4
         Top = 6
-        Width = 732
-        Height = 411
+        Width = 728
+        Height = 407
         Margins.Top = 5
         Align = alClient
         Checkboxes = True
@@ -711,8 +711,8 @@ object MainForm: TMainForm
       end
       object stat1: TStatusBar
         Left = 1
-        Top = 420
-        Width = 738
+        Top = 416
+        Width = 734
         Height = 20
         Panels = <
           item

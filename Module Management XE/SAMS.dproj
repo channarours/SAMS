@@ -106,7 +106,6 @@
         <DCCReference Include="FormParam.pas">
             <Form>Param</Form>
         </DCCReference>
-        <DCCReference Include="MySeed.pas"/>
         <DCCReference Include="FormSetting.pas">
             <Form>Setting</Form>
         </DCCReference>

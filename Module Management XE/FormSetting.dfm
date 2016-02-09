@@ -2,7 +2,7 @@ object Setting: TSetting
   Left = 0
   Top = 0
   Caption = 'Setting'
-  ClientHeight = 461
+  ClientHeight = 462
   ClientWidth = 784
   Color = clBtnFace
   Constraints.MaxHeight = 600
@@ -22,7 +22,7 @@ object Setting: TSetting
   object ctgrypnlgrpSetting: TCategoryPanelGroup
     Left = 0
     Top = 0
-    Height = 461
+    Height = 462
     VertScrollBar.Tracking = True
     HeaderFont.Charset = DEFAULT_CHARSET
     HeaderFont.Color = clWindowText
@@ -35,7 +35,6 @@ object Setting: TSetting
       Height = 234
       Caption = 'Task Manager'
       TabOrder = 0
-      ExplicitWidth = 185
       object tvTaskManager: TTreeView
         Left = 0
         Top = 0
@@ -57,7 +56,6 @@ object Setting: TSetting
       Height = 225
       Caption = 'General'
       TabOrder = 1
-      ExplicitWidth = 185
       object tvGeneral: TTreeView
         Left = 0
         Top = 0
@@ -83,14 +81,14 @@ object Setting: TSetting
     Left = 200
     Top = 0
     Width = 584
-    Height = 461
+    Height = 462
     Align = alClient
     TabOrder = 1
     object pnlMailSetting: TPanel
       Left = 1
       Top = 1
       Width = 582
-      Height = 459
+      Height = 460
       Align = alClient
       TabOrder = 3
       object pnlTEmailSetting: TPanel
@@ -247,7 +245,7 @@ object Setting: TSetting
       Left = 1
       Top = 1
       Width = 582
-      Height = 459
+      Height = 460
       Align = alClient
       TabOrder = 2
       object pnlTModuleSetting: TPanel
@@ -257,7 +255,6 @@ object Setting: TSetting
         Height = 188
         Align = alTop
         TabOrder = 0
-        ExplicitLeft = 3
         object grpTModuleSetting: TGroupBox
           AlignWithMargins = True
           Left = 26
@@ -401,7 +398,7 @@ object Setting: TSetting
         Left = 1
         Top = 189
         Width = 580
-        Height = 269
+        Height = 270
         Align = alClient
         TabOrder = 1
       end
@@ -410,7 +407,7 @@ object Setting: TSetting
       Left = 1
       Top = 1
       Width = 582
-      Height = 459
+      Height = 460
       Align = alClient
       TabOrder = 1
       object pnlErrorTop: TPanel
@@ -472,7 +469,7 @@ object Setting: TSetting
         Left = 1
         Top = 159
         Width = 580
-        Height = 299
+        Height = 300
         Align = alClient
         TabOrder = 1
         object lvErrorKeys: TListView
@@ -480,7 +477,7 @@ object Setting: TSetting
           Left = 11
           Top = 33
           Width = 558
-          Height = 255
+          Height = 256
           Margins.Left = 10
           Margins.Top = 0
           Margins.Right = 10
@@ -584,7 +581,7 @@ object Setting: TSetting
       Left = 1
       Top = 1
       Width = 582
-      Height = 459
+      Height = 460
       Align = alClient
       TabOrder = 0
       object pnlASTop: TPanel
@@ -627,19 +624,13 @@ object Setting: TSetting
             Height = 16
             Caption = 'Start :'
           end
-          object lblMailTo: TLabel
-            Left = 258
-            Top = 54
-            Width = 47
-            Height = 16
-            Caption = 'Mail to :'
-          end
           object cbbtaskType: TComboBox
             Left = 126
             Top = 21
             Width = 130
             Height = 24
             TabOrder = 0
+            OnChange = cbbtaskTypeChange
             Items.Strings = (
               'On a Schedule'
               'At Log on'
@@ -653,17 +644,19 @@ object Setting: TSetting
             Date = 42400.694158958340000000
             Time = 42400.694158958340000000
             TabOrder = 1
+            OnChange = dtpSStartDateChange
           end
           object dtpSTime: TDateTimePicker
             Left = 419
             Top = 21
             Width = 96
             Height = 24
-            Date = 42400.694774618050000000
+            Date = 42400.000000000000000000
             Format = 'hh:mm:ss'
-            Time = 42400.694774618050000000
+            Time = 42400.000000000000000000
             DateMode = dmUpDown
             TabOrder = 2
+            OnChange = dtpSTimeChange
           end
           object rgChoose: TRadioGroup
             Left = 18
@@ -681,6 +674,7 @@ object Setting: TSetting
               'Weekly')
             ParentFont = False
             TabOrder = 3
+            OnClick = rgChooseClick
           end
           object chklstDays: TCheckListBox
             Left = 126
@@ -696,11 +690,12 @@ object Setting: TSetting
               'Saturday'
               'Sunday')
             TabOrder = 4
+            OnClick = chklstDaysClick
           end
           object edtadminMail: TEdit
-            Left = 305
+            Left = 365
             Top = 51
-            Width = 210
+            Width = 148
             Height = 24
             TabOrder = 5
           end
@@ -711,6 +706,7 @@ object Setting: TSetting
             Height = 25
             Caption = 'Remove'
             TabOrder = 6
+            OnClick = btnRemoveClick
           end
           object btnOk: TButton
             Left = 305
@@ -719,6 +715,7 @@ object Setting: TSetting
             Height = 25
             Caption = 'OK'
             TabOrder = 7
+            OnClick = btnOkClick
           end
           object btnCancle: TButton
             Left = 430
@@ -727,6 +724,7 @@ object Setting: TSetting
             Height = 25
             Caption = 'Cancel'
             TabOrder = 8
+            OnClick = btnCancleClick
           end
           object mmoMailBody: TMemo
             Left = 305
@@ -735,11 +733,19 @@ object Setting: TSetting
             Height = 96
             TabOrder = 9
           end
+          object chkMail: TCheckBox
+            Left = 269
+            Top = 53
+            Width = 97
+            Height = 17
+            Caption = 'Send Mail To : '
+            TabOrder = 10
+          end
         end
       end
       object pnlASButtom: TPanel
         Left = 1
-        Top = 226
+        Top = 227
         Width = 580
         Height = 232
         Align = alBottom

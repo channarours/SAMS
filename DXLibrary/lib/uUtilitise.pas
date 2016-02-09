@@ -3,10 +3,12 @@ unit uUtilitise;
 interface
 
 uses
-  Windows, Messages, SysUtils, StrUtils, Variants,
-  Classes, IniFiles, Math, IdHTTP, IdIOHandler,OleCtrls, SHDocVw,graphics,
-  MSHTML, extctrls,Registry,ShellAPI,MySeed,Forms,Controls,
-  Dialogs, StdCtrls, ComCtrls, Menus, mTypes, Grids, ValEdit;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  System.Classes, Vcl.Graphics,
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Vcl.ComCtrls,
+  Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls, StrUtils, IniFiles, Math, IdHTTP, IdIOHandler,OleCtrls, SHDocVw,
+  MSHTML,Registry,ShellAPI,MySeed, Menus, mTypes, Grids, ValEdit,uMethod;
 Type
   TUtilitise = Class
     public
@@ -19,9 +21,50 @@ Type
   procedure RemoveEntryFromRegistry(AppName:String);
   procedure DialogBoxAutoClose(const ACaption, APrompt: string; DuracaoEmSegundos: Integer;AppClose:Boolean);
   function DOSOUTPUT(CommandLine: string; Work: string = 'C:\'): string;
+  function ConvertTime12To24(Time12:String):String;
+  function GetValueCheckListBox(CheckListBox: TCheckListBox): string;
   End;
 implementation
 // Pisal
+function TUtilitise.GetValueCheckListBox(CheckListBox: TCheckListBox): string;
+var
+  i: Integer;
+begin
+  Result := '';
+
+  for i := 0 to CheckListBox.Count - 1 do
+  begin
+    if CheckListBox.Checked[i] then
+      Result := Result +Copy(CheckListBox.Items[i],0,3)+',';
+  end;
+  Result:=copy(Result,0,Length(result)-1);
+end;
+
+function TUtilitise.ConvertTime12To24(Time12:String):String; //07:49:00 PM = 19 : 49 : 00
+var
+  zone,temp:String;
+  H,M,S:Byte;
+begin
+  zone:=StrGrab(Time12,' ','');
+  H:=StrToInt( copy(Time12,0,StrPos(':',Time12,1)-1));
+  temp:= copy(Time12,StrPos(':',Time12,1)+1,StrPos(':',Time12,2));
+  if (SameText(zone,'PM')) then
+  begin
+    if H=12 then
+      H:=12
+    else
+    begin H:=H+12;
+    temp:=IntToStr(H)+':'+temp; end;
+  end else
+  begin
+    if H<10 then
+    begin temp:='0'+IntToStr(H)+':'+temp; end
+    else
+    begin temp:=IntToStr(H)+':'+temp; end;
+  end;
+  Result:=temp;
+end;
+
 function TUtilitise.DOSOUTPUT(CommandLine: string; Work: string = 'C:\'): string;
 var
   SA: TSecurityAttributes;
