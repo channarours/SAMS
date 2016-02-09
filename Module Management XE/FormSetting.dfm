@@ -35,6 +35,7 @@ object Setting: TSetting
       Height = 234
       Caption = 'Task Manager'
       TabOrder = 0
+      ExplicitWidth = 185
       object tvTaskManager: TTreeView
         Left = 0
         Top = 0
@@ -56,6 +57,7 @@ object Setting: TSetting
       Height = 225
       Caption = 'General'
       TabOrder = 1
+      ExplicitWidth = 185
       object tvGeneral: TTreeView
         Left = 0
         Top = 0
@@ -239,6 +241,169 @@ object Setting: TSetting
             TabOrder = 5
           end
         end
+      end
+    end
+    object pnlModuleSetting: TPanel
+      Left = 1
+      Top = 1
+      Width = 582
+      Height = 459
+      Align = alClient
+      TabOrder = 2
+      object pnlTModuleSetting: TPanel
+        Left = 1
+        Top = 1
+        Width = 580
+        Height = 188
+        Align = alTop
+        TabOrder = 0
+        ExplicitLeft = 3
+        object grpTModuleSetting: TGroupBox
+          AlignWithMargins = True
+          Left = 26
+          Top = 26
+          Width = 528
+          Height = 136
+          Margins.Left = 25
+          Margins.Top = 25
+          Margins.Right = 25
+          Margins.Bottom = 25
+          Align = alClient
+          Caption = ' Setting : '
+          TabOrder = 0
+          object lblModuleDir: TLabel
+            Left = 18
+            Top = 32
+            Width = 93
+            Height = 16
+            Caption = 'Folder location :'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object lblModuleExtension: TLabel
+            Left = 48
+            Top = 65
+            Width = 63
+            Height = 16
+            Caption = 'Extension :'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object lblModuleThread: TLabel
+            Left = 173
+            Top = 65
+            Width = 110
+            Height = 16
+            Caption = 'Number of thread :'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object edtModuleDirs: TEdit
+            Left = 117
+            Top = 27
+            Width = 332
+            Height = 25
+            AutoSelect = False
+            AutoSize = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 1
+            Text = '../module/'
+          end
+          object btnModuleDirs: TButton
+            Left = 447
+            Top = 27
+            Width = 34
+            Height = 25
+            Caption = ' ...'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 0
+          end
+          object edtModuleExtension: TEdit
+            Left = 117
+            Top = 57
+            Width = 50
+            Height = 25
+            Alignment = taCenter
+            AutoSelect = False
+            AutoSize = False
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 2
+            Text = 'kha'
+          end
+          object cbbModuleThread: TComboBox
+            Left = 289
+            Top = 58
+            Width = 49
+            Height = 24
+            DropDownCount = 4
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            TabOrder = 3
+            Text = '1'
+            Items.Strings = (
+              '1'
+              '2'
+              '4'
+              '6'
+              '8'
+              '10')
+          end
+          object btnModuleSettingOk: TButton
+            Left = 347
+            Top = 87
+            Width = 75
+            Height = 25
+            Caption = 'OK'
+            TabOrder = 4
+          end
+          object btnModuleSettingCancle: TButton
+            Left = 423
+            Top = 87
+            Width = 75
+            Height = 25
+            Caption = 'Cancel'
+            TabOrder = 5
+          end
+        end
+      end
+      object pnlBModuleSetting: TPanel
+        Left = 1
+        Top = 189
+        Width = 580
+        Height = 269
+        Align = alClient
+        TabOrder = 1
       end
     end
     object pnlErrorSetting: TPanel
@@ -578,168 +743,6 @@ object Setting: TSetting
         Width = 580
         Height = 232
         Align = alBottom
-        TabOrder = 1
-      end
-    end
-    object pnlModuleSetting: TPanel
-      Left = 1
-      Top = 1
-      Width = 582
-      Height = 459
-      Align = alClient
-      TabOrder = 2
-      object pnlTModuleSetting: TPanel
-        Left = 1
-        Top = 1
-        Width = 580
-        Height = 188
-        Align = alTop
-        TabOrder = 0
-        object grpTModuleSetting: TGroupBox
-          AlignWithMargins = True
-          Left = 26
-          Top = 26
-          Width = 528
-          Height = 136
-          Margins.Left = 25
-          Margins.Top = 25
-          Margins.Right = 25
-          Margins.Bottom = 25
-          Align = alClient
-          Caption = ' Setting : '
-          TabOrder = 0
-          object lblModuleDir: TLabel
-            Left = 18
-            Top = 32
-            Width = 93
-            Height = 16
-            Caption = 'Folder location :'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object lblModuleExtension: TLabel
-            Left = 48
-            Top = 65
-            Width = 63
-            Height = 16
-            Caption = 'Extension :'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object lblModuleThread: TLabel
-            Left = 173
-            Top = 65
-            Width = 110
-            Height = 16
-            Caption = 'Number of thread :'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object edtModuleDirs: TEdit
-            Left = 117
-            Top = 27
-            Width = 332
-            Height = 25
-            AutoSelect = False
-            AutoSize = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 1
-            Text = '../module/'
-          end
-          object btnModuleDirs: TButton
-            Left = 447
-            Top = 27
-            Width = 34
-            Height = 25
-            Caption = ' ...'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 0
-          end
-          object edtModuleExtension: TEdit
-            Left = 117
-            Top = 57
-            Width = 50
-            Height = 25
-            Alignment = taCenter
-            AutoSelect = False
-            AutoSize = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 2
-            Text = 'kha'
-          end
-          object cbbModuleThread: TComboBox
-            Left = 289
-            Top = 58
-            Width = 49
-            Height = 24
-            DropDownCount = 4
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 3
-            Text = '1'
-            Items.Strings = (
-              '1'
-              '2'
-              '4'
-              '6'
-              '8'
-              '10')
-          end
-          object btnModuleSettingOk: TButton
-            Left = 347
-            Top = 87
-            Width = 75
-            Height = 25
-            Caption = 'OK'
-            TabOrder = 4
-          end
-          object btnModuleSettingCancle: TButton
-            Left = 423
-            Top = 87
-            Width = 75
-            Height = 25
-            Caption = 'Cancel'
-            TabOrder = 5
-          end
-        end
-      end
-      object pnlBModuleSetting: TPanel
-        Left = 1
-        Top = 189
-        Width = 580
-        Height = 269
-        Align = alClient
         TabOrder = 1
       end
     end

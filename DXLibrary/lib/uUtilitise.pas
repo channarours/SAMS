@@ -5,9 +5,11 @@ interface
 uses
   Windows, Messages, SysUtils, StrUtils, Variants,
   Classes, IniFiles, Math, IdHTTP, IdIOHandler,OleCtrls, SHDocVw,graphics,
-  MSHTML, extctrls,Registry,ShellAPI,Seed,Forms,Controls,
+  MSHTML, extctrls,Registry,ShellAPI,MySeed,Forms,Controls,
   Dialogs, StdCtrls, ComCtrls, Menus, mTypes, Grids, ValEdit;
-
+Type
+  TUtilitise = Class
+    public
 
   function FileVersion(const FileName:TFileName):String;
   function FileDecryption(const filename:String;key:String):String;
@@ -16,11 +18,66 @@ uses
   procedure SetAutoStart_REG(AppName, AppTitle: string; bRegister: Boolean);
   procedure RemoveEntryFromRegistry(AppName:String);
   procedure DialogBoxAutoClose(const ACaption, APrompt: string; DuracaoEmSegundos: Integer;AppClose:Boolean);
-
+  function DOSOUTPUT(CommandLine: string; Work: string = 'C:\'): string;
+  End;
 implementation
 // Pisal
+function TUtilitise.DOSOUTPUT(CommandLine: string; Work: string = 'C:\'): string;
+var
+  SA: TSecurityAttributes;
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  StdOutPipeRead, StdOutPipeWrite: THandle;
+  WasOK: Boolean;
+  Buffer: array[0..255] of AnsiChar;
+  BytesRead: Cardinal;
+  WorkDir: string;
+  Handle: Boolean;
+begin
+  Result := '';
+  with SA do begin
+    nLength := SizeOf(SA);
+    bInheritHandle := True;
+    lpSecurityDescriptor := nil;
+  end;
+  CreatePipe(StdOutPipeRead, StdOutPipeWrite, @SA, 0);
+  try
+    with SI do
+    begin
+      FillChar(SI, SizeOf(SI), 0);
+      cb := SizeOf(SI);
+      dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+      wShowWindow := SW_HIDE;
+      hStdInput := GetStdHandle(STD_INPUT_HANDLE); // don't redirect stdin
+      hStdOutput := StdOutPipeWrite;
+      hStdError := StdOutPipeWrite;
+    end;
+    WorkDir := Work;
+    Handle := CreateProcess(nil, PChar('cmd.exe /C ' + CommandLine),
+                            nil, nil, True, 0, nil,
+                            PChar(WorkDir), SI, PI);
+    CloseHandle(StdOutPipeWrite);
+    if Handle then
+      try
+        repeat
+          WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+          if BytesRead > 0 then
+          begin
+            Buffer[BytesRead] := #0;
+            Result := Result + Buffer;
+          end;
+        until not WasOK or (BytesRead = 0);
+        WaitForSingleObject(PI.hProcess, INFINITE);
+      finally
+        CloseHandle(PI.hThread);
+        CloseHandle(PI.hProcess);
+      end;
+  finally
+    CloseHandle(StdOutPipeRead);
+  end;
+end;
 
-procedure DialogBoxAutoClose(const ACaption, APrompt: string; DuracaoEmSegundos: Integer;AppClose:Boolean);
+procedure TUtilitise.DialogBoxAutoClose(const ACaption, APrompt: string; DuracaoEmSegundos: Integer;AppClose:Boolean);
 var
   Form: TForm;
   Prompt: TLabel;
@@ -85,7 +142,7 @@ begin
 end;
 
 
-procedure RemoveEntryFromRegistry(AppName:String);
+procedure TUtilitise.RemoveEntryFromRegistry(AppName:String);
 var key: string;
      Reg: TRegIniFile;
 begin
@@ -99,7 +156,7 @@ try
   end;
 end;
 
-procedure SetAutoStart_REG(AppName, AppTitle: string; bRegister: Boolean);
+procedure TUtilitise.SetAutoStart_REG(AppName, AppTitle: string; bRegister: Boolean);
 const
   RegKey = '\Software\Microsoft\Windows\CurrentVersion\Run';
   // or: RegKey = '\Software\Microsoft\Windows\CurrentVersion\RunOnce';
@@ -120,7 +177,7 @@ begin
     Registry.Free;
   end;
 end;
-procedure CreateFile(const filename:String;source:String);
+procedure TUtilitise.CreateFile(const filename:String;source:String);
 var
   F: TextFile;
 begin
@@ -131,7 +188,7 @@ begin
   CloseFile(F)
 end;
 
-function FileDecryption(const filename:String;key:String):String;
+function TUtilitise.FileDecryption(const filename:String;key:String):String;
 var
   text, temp,fullFileName,fileini: string;
   F: TextFile;
@@ -150,23 +207,23 @@ begin
   end;
   // Close the file for the last time
   CloseFile(F);
-  Result := SeedDecFromBase64(key, temp);
+  Result := seedDcpFromSHA256(key, temp);
   end else Result:='NAN';
 end;
-function FileEncryption(const filename:String;key:String;source:String):String;
+function TUtilitise.FileEncryption(const filename:String;key:String;source:String):String;
 var
   textString: string;
   F: TextFile;
 begin
   AssignFile(F, filename);
   ReWrite(F);
-  textString := SeedEncToBase64(key, source);
+  textString := SeedEncToSHA256(key, source);
   Write(F, textString);
   //Write(F, source);
   CloseFile(F);
   Result := 'Success';
 end;
-function FileVersion(const FileName: TFileName): String;
+function TUtilitise.FileVersion(const FileName: TFileName): String;
 var
   VerInfoSize: Cardinal;
   VerValueSize: Cardinal;
