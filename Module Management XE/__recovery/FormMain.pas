@@ -107,9 +107,8 @@ type
   end;
 var
   MainForm: TMainForm;
-  TMSetting: TSSetting;
+  TMSetting: TFSetting;
   FmyUser:TUser;
-  FmyJsoun:TJsonUtility;
 
 implementation
 
@@ -171,10 +170,9 @@ begin
 
   // Transfer file to object myUser
   ShowMessage(myUtilitise.ReadFile('test.txt'));
-  FmyUser:=TUser.Create;
-  FmyJsoun:=TJsonUtility.create;
-  FmyUser:=FmyJsoun.fromJson(myUtilitise.ReadFile('test.txt'));
-  ShowMessage(FmyUser.getSetting.getScheduleSetting.getTask.Items[0].GetfileURL);
+
+ // myUser:=myJsoun.fromJson(myUtilitise.ReadFile('test.txt'));
+  //ShowMessage( myUser.getSetting.getScheduleSetting.getTask.Items[0].GetfileURL);
 
 end;
 

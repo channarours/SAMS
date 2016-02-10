@@ -37,7 +37,6 @@ type
       procedure Setpassword(const Value: string);
     published
   end;
-
   TEmailSetting = class
     private
       Serverlist : TObjectList<TServer>;
@@ -132,6 +131,40 @@ type
     published
   end;
   TUserType = (Admin,Normal,Developer);
+  TModuleInfo = class
+    private
+      id  : Integer;
+      name:string;
+      types:string;
+      service:string;
+      code:string;
+      param:String;
+    protected
+    public
+      function Getid(): Integer;
+      function Getname(): string;
+      function Gettypes(): string;
+      function Getservice(): string;
+      function Getcode(): string;
+      function Getparam(): String;
+      procedure Setid(const Value: Integer);
+      procedure Setname(const Value: string);
+      procedure Settypes(const Value: string);
+      procedure Setservice(const Value: string);
+      procedure Setcode(const Value: string);
+      procedure Setparam(const Value: String);
+    published
+  end;
+  TModuleList = class
+    private
+      moduleList : TObjectList<TModuleInfo>;
+    protected
+    public
+      constructor create;
+      procedure addModuleInfo(const id:Integer;const name:string;const types:String;const service:String;const code:String;const param:String);
+      function getModuleInfo:TObjectList<TModuleInfo>;
+    published
+  end;
   TUser = class
     private
       uid:Integer;
@@ -140,6 +173,7 @@ type
       uType:TUserType;
       // administrator and user profile
       setting:TSetting;
+      modules:TModuleList;
     protected
       function Getuid():integer;
       function Getname(): String;
@@ -157,6 +191,7 @@ type
       procedure SetuType(const Value: TUserType);
       constructor Create;
       function getSetting:TSetting;
+      function getModuleList:TModuleList;
     published
   end;
   TJsonUtility = class
@@ -170,6 +205,56 @@ type
     published
   end;
   implementation
+  { TModuleInfo }
+function TModuleInfo.Getid(): Integer;
+begin
+  Result:=Self.id;
+end;
+function TModuleInfo.Getname(): string;
+begin
+  Result:=Self.name;
+end;
+function TModuleInfo.Gettypes(): string;
+begin
+  Result:=Self.types;
+end;
+function TModuleInfo.Getservice(): string;
+begin
+  Result:=Self.service;
+end;
+function TModuleInfo.Getcode(): string;
+begin
+  Result:=Self.code;
+end;
+function TModuleInfo.Getparam(): String;
+begin
+  Result:=Self.param;
+end;
+procedure TModuleInfo.Setid(const Value: Integer);
+begin
+  Self.id:=Value;
+end;
+procedure TModuleInfo.Setname(const Value: string);
+begin
+  Self.name:=Value;
+end;
+procedure TModuleInfo.Settypes(const Value: string);
+begin
+  Self.types:=Value;
+end;
+procedure TModuleInfo.Setservice(const Value: string);
+begin
+  Self.service:=Value;
+end;
+procedure TModuleInfo.Setcode(const Value: string);
+begin
+  Self.code:=Value;
+end;
+procedure TModuleInfo.Setparam(const Value: String);
+begin
+  Self.param:=Value;
+end;
+  { TUser }
 function TUser.Getuid():Integer;
 begin
   Result := Self.uid;
@@ -177,6 +262,12 @@ end;
 constructor TUser.Create;
 begin
   Self.setting := TSetting.create;
+  Self.modules := TModuleList.create;
+end;
+
+function TUser.getModuleList: TModuleList;
+begin
+Result := modules;
 end;
 
 function TUser.Getname(): String;
@@ -540,6 +631,8 @@ var
   ScheduleSetting:TJSONObject;
   tasks : TJSONArray;
   task:TJSONObject;
+  moduleList:TJSONArray;
+  module:TJSONObject;
   temp,temp1:String;
   i:Integer;
 begin
@@ -686,6 +779,24 @@ begin
                   end;
             end;
         end;
+
+        moduleList := TJSONArray.Create;
+        moduleList := TJSONArray(UserJson.Get('module').JsonValue);
+        for i := 0 to moduleList.Count - 1 do
+          begin
+            module := TJSONObject(moduleList.Get(i));
+            with User.getModuleList do
+            begin
+              addModuleInfo(
+                           (StrToInt((module.Get('id').JsonValue as TJsonString).Value)),
+                           (module.Get('name').JsonValue as TJSONString).Value,
+                           (module.Get('type').JsonValue as TJSONString).Value,
+                           (module.Get('service').JsonValue as TJSONString).Value,
+                           (module.Get('code').JsonValue as TJSONString).Value,
+                           (module.Get('param').JsonValue as TJSONString).Value
+                           );
+            end;
+          end;
     end;
   Result := User;
 end;
@@ -693,6 +804,8 @@ end;
 function TJsonUtility.toJson(const User: TUser):String;
 var
   UserJson:TJSONObject;
+  ModuleJsonList:TJSONArray;
+  Module:TJSONObject;
   SettingJson:TJSONObject;
   ModuleSetting:TJSONObject;
   EmailSetting:TJSONObject;
@@ -738,8 +851,10 @@ begin
         end;
 
       MailAccount := TJSONObject.Create;
-      MailAccount.AddPair('username',User.getSetting.emailSetting.Account.Getusername);
-      MailAccount.AddPair('password',User.getSetting.emailSetting.Account.Getpassword);
+      //MailAccount.AddPair('username',User.getSetting.emailSetting.Account.Getusername);
+      MailAccount.AddPair(TJSONPair.Create(TJSONString.Create('username'),TJSONString.Create(User.getSetting.emailSetting.Account.Getusername)));
+      //MailAccount.AddPair('password',User.getSetting.emailSetting.Account.Getpassword);
+      MailAccount.AddPair(TJSONPair.Create(TJSONString.Create('password'),TJSONString.Create(User.getSetting.emailSetting.Account.Getpassword)));
       EmailSetting.AddPair('server',ServerList);
       EmailSetting.AddPair('account',MailAccount);
       SettingJson.AddPair('EmailSetting',EmailSetting);
@@ -768,7 +883,54 @@ begin
       SettingJson.AddPair('ScheduleSetting',ScheduleSetting);
     end;
      UserJson.AddPair('Setting',SettingJson);
+
+     { Module Information }
+      ModuleJsonList := TJSONArray.Create;
+      for i := 0 to User.getModuleList.getModuleInfo.Count - 1 do
+      begin
+        Module := TJSONObject.Create;
+        with user.getModuleList.getModuleInfo.Items[i] do
+        begin
+          Module.AddPair('id',IntToStr(Getid));
+          Module.AddPair('name',Getname);
+          Module.AddPair('type',Gettypes);
+          Module.AddPair('service',Getservice);
+          Module.AddPair('code',Getcode);
+          Module.AddPair('param',Getparam);
+          ModuleJsonList.AddElement(Module);
+        end;
+      end;
+      UserJson.AddPair('module',ModuleJsonList);
   Result := UserJson.ToJSON;
+end;
+
+{ TModuleList }
+
+procedure TModuleList.addModuleInfo(const id: Integer; const name, types,
+  service, code, param: String);
+var
+  module:TModuleInfo;
+begin
+  module := TModuleInfo.Create;
+  module.Setid(id);
+  module.Setname(name);
+  module.Settypes(types);
+  module.Setservice(service);
+  module.Setcode(code);
+  module.Setparam(param);
+
+  moduleList.Add(module);
+
+end;
+
+constructor TModuleList.create;
+begin
+  moduleList := TObjectList<TModuleInfo>.Create;
+end;
+
+function TModuleList.getModuleInfo: TObjectList<TModuleInfo>;
+begin
+  Result := moduleList;
 end;
 
 end.

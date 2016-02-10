@@ -24,6 +24,7 @@ Type
   function DOSOUTPUT(CommandLine: string; Work: string = 'C:\'): string;
   function ConvertTime12To24(Time12:String):String;
   function GetValueCheckListBox(CheckListBox: TCheckListBox): string;
+  function FindFile(const path:string;const extension:string):TStringList;
   End;
 implementation
 // Pisal
@@ -126,7 +127,7 @@ begin
     if Handle then
       try
         repeat
-          WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+          //WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
           if BytesRead > 0 then
           begin
             Buffer[BytesRead] := #0;
@@ -312,6 +313,26 @@ begin
   finally
     FreeMem(PVerInfo, VerInfoSize);
   end;
+end;
+
+function TUtilitise.FindFile(const path, extension: string): TStringList;
+var
+  SR: TSearchRec;
+  FileList : TStringList;
+begin
+  if FindFirst(Path + '\*.' + extension, faAnyFile, SR) = 0 then
+  begin
+    FileList := TStringList.Create;
+    repeat
+      if (SR.Attr <> faDirectory) then
+      begin
+        FileList.Add(SR.Name);
+      end;
+    until FindNext(SR) <> 0;
+    FindClose(SR);
+  end;
+  Result := FileList;
+
 end;
 
 end.

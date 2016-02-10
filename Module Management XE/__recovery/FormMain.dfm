@@ -27,6 +27,8 @@ object MainForm: TMainForm
   WindowState = wsMaximized
   OnCreate = FormCreate
   OnResize = FormResize
+  ExplicitWidth = 320
+  ExplicitHeight = 240
   PixelsPerInch = 96
   TextHeight = 13
   object pnlModuelInfo: TPanel

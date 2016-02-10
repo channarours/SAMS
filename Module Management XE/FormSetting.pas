@@ -8,10 +8,10 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.ComCtrls,
   Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls,uUtilitise
-  ,uTaskSchedule,MyMail,MySetting;
+  ,uTaskSchedule,MyMail,MySetting,Vcl.FileCtrl,uMethod;
 
 type
-  TSSetting = class(TForm)
+  TFSetting = class(TForm)
     ctgrypnlgrpSetting: TCategoryPanelGroup;
     ctgrypnlGeneral: TCategoryPanel;
     ctgrypnl2: TCategoryPanel;
@@ -86,6 +86,10 @@ type
     btnTSave: TButton;
     TaskList: TLabel;
     ModuleList: TLabel;
+    lvmoduleSetting: TListView;
+    lblCurrentModule: TLabel;
+    pnlBBModuleSetting: TPanel;
+    btnAddModuleInfo: TButton;
     procedure FormCreate(Sender: TObject);
     procedure tvTaskManagerClick(Sender: TObject);
     procedure tvGeneralClick(Sender: TObject);
@@ -97,6 +101,7 @@ type
     procedure dtpSTimeChange(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
     procedure btnRemoveClick(Sender: TObject);
+    procedure btnModuleDirsClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -106,7 +111,7 @@ type
 
 
 var
-  SSetting: TSSetting;
+  SSetting: TFSetting;
   myUtilitise:TUtilitise;
   mySchedule : TSchedule;
   myUser:TUser;
@@ -126,12 +131,43 @@ implementation
 const
   TaskTitle = 'SAMS'; // Task Title, use to apply task schedule setting
 
-procedure TSSetting.btnCancleClick(Sender: TObject);
+procedure TFSetting.btnCancleClick(Sender: TObject);
 begin
   Self.Close;
 end;
 
-procedure TSSetting.btnOkClick(Sender: TObject);
+procedure TFSetting.btnModuleDirsClick(Sender: TObject);
+var
+  SELDIRHELP :Integer;
+  Dir :string;
+  FileList:TStringList;
+  name:String;
+  i : integer;
+begin
+  Dir := GetCurrentDir;
+  SELDIRHELP := 1000;
+  if Vcl.FileCtrl.SelectDirectory(Dir,[sdAllowCreate, sdPerformCreate, sdPrompt],SELDIRHELP) then
+  begin
+    edtModuleDirs.Text := Dir;
+    FileList := TStringList.Create;
+    // insert file information to lvModulelist
+    FileList := myUtilitise.FindFile(Dir,edtModuleExtension.Text);
+    for i := 0 to FileList.Count - 1 do
+      begin
+        with lvmoduleSetting.Items.Add do
+          begin
+            name    := StrGrab(FileList.Strings[i],'','.');
+            Caption := IntToStr(i+1);
+            SubItems.Add(name);
+            SubItems.Add(myUtilitise.FileVersion(Dir+'\'+FileList.Strings[i]));
+          end;
+      end;
+
+  end;
+
+end;
+
+procedure TFSetting.btnOkClick(Sender: TObject);
 var
 buttonSelected :Integer;
 str:String;
@@ -181,7 +217,7 @@ begin
   end;
 end;
 
-procedure TSSetting.btnRemoveClick(Sender: TObject);
+procedure TFSetting.btnRemoveClick(Sender: TObject);
 var
   buttonSelected :Integer;
 begin
@@ -194,7 +230,7 @@ begin
         end;
 end;
 
-procedure TSSetting.cbbtaskTypeChange(Sender: TObject);
+procedure TFSetting.cbbtaskTypeChange(Sender: TObject);
 var
   itemTitle:String;
   itemIndex:Byte;
@@ -213,22 +249,22 @@ begin
 
 end;
 
-procedure TSSetting.chklstDaysClick(Sender: TObject);
+procedure TFSetting.chklstDaysClick(Sender: TObject);
 begin
   dayPick:=myUtilitise.GetValueCheckListBox(chklstDays);
 end;
 
-procedure TSSetting.dtpSStartDateChange(Sender: TObject);
+procedure TFSetting.dtpSStartDateChange(Sender: TObject);
 begin
   dtpDatePick:=DateToStr(dtpSStartDate.Date);
 end;
 
-procedure TSSetting.dtpSTimeChange(Sender: TObject);
+procedure TFSetting.dtpSTimeChange(Sender: TObject);
 begin
   dtpTimePick:=TimeToStr(dtpSTime.time);
 end;
 
-procedure TSSetting.FormCreate(Sender: TObject);
+procedure TFSetting.FormCreate(Sender: TObject);
 var
   lvX: Integer;
 begin
@@ -247,7 +283,7 @@ begin
   AppFullPath:=Application.ExeName;
 end;
 
-procedure TSSetting.rgChooseClick(Sender: TObject);
+procedure TFSetting.rgChooseClick(Sender: TObject);
 var index:Byte;
 begin
       index:=rgChoose.ItemIndex;
@@ -277,7 +313,7 @@ end;
 
 
 
-procedure TSSetting.tvGeneralClick(Sender: TObject);
+procedure TFSetting.tvGeneralClick(Sender: TObject);
 var
   selectText: String;
 begin
@@ -317,7 +353,7 @@ begin
 
 end;
 
-procedure TSSetting.tvTaskManagerClick(Sender: TObject);
+procedure TFSetting.tvTaskManagerClick(Sender: TObject);
 var
   selectText: String;
 begin
