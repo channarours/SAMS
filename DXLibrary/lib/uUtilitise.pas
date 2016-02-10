@@ -17,6 +17,7 @@ Type
   function FileDecryption(const filename:String;key:String):String;
   function FileEncryption(const filename:String;key:String;source:String):String;
   procedure CreateFile(const filename:String;source:String);
+  function ReadFile(const filename:string):String;
   procedure SetAutoStart_REG(AppName, AppTitle: string; bRegister: Boolean);
   procedure RemoveEntryFromRegistry(AppName:String);
   procedure DialogBoxAutoClose(const ACaption, APrompt: string; DuracaoEmSegundos: Integer;AppClose:Boolean);
@@ -26,6 +27,28 @@ Type
   End;
 implementation
 // Pisal
+function TUtilitise.ReadFile(const filename:String):String;
+var
+  text, temp: string;
+  F: TextFile;
+begin
+  if FileExists(filename) then
+  begin
+     AssignFile(F, filename);
+  // Reopen the file for reading
+  Reset(F);
+
+  // Display the file contents
+  while not Eof(F) do
+  begin
+    ReadLn(F, text);
+    temp := temp + text;
+  end;
+  // Close the file for the last time
+  CloseFile(F);
+  Result:=temp;
+  end else Result:='NAN';
+end;
 function TUtilitise.GetValueCheckListBox(CheckListBox: TCheckListBox): string;
 var
   i: Integer;

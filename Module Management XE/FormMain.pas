@@ -7,9 +7,9 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.Menus, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.WinXCtrls, Vcl.ComCtrls, uMethod, System.IniFiles, MySeed, FormParam,
-  mTypes, GetKHAversion, FormSetting, IdBaseComponent, IdComponent,
+  mTypes, GetKHAversion, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
-  IdSMTPBase, IdSMTP,Contnrs;
+  IdSMTPBase, IdSMTP,Contnrs,FormSetting,MySetting,MyMail,uUtilitise;
 
 const
   wm_start = WM_USER + $1005;
@@ -92,8 +92,8 @@ type
     procedure btnDeleteClick(Sender: TObject);
     procedure edtParamClick(Sender: TObject);
     procedure mniModuleClick(Sender: TObject);
-    procedure Setting1Click(Sender: TObject);
     procedure btnCountClick(Sender: TObject);
+    procedure Setting1Click(Sender: TObject);
 
     { End Module infomation Interface code }
   private
@@ -107,6 +107,8 @@ type
   end;
 var
   MainForm: TMainForm;
+  TMSetting: TSSetting;
+  FmyUser:TUser;
 
 implementation
 
@@ -165,6 +167,13 @@ begin
   // addTest;
   loadModuleToMainForm;
   loadFiletoNewModuleInfo;
+
+  // Transfer file to object myUser
+  ShowMessage(myUtilitise.ReadFile('test.txt'));
+
+ // myUser:=myJsoun.fromJson(myUtilitise.ReadFile('test.txt'));
+  //ShowMessage( myUser.getSetting.getScheduleSetting.getTask.Items[0].GetfileURL);
+
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -613,11 +622,8 @@ begin
 end;
 
 procedure TMainForm.Setting1Click(Sender: TObject);
-var
-  settingForm: TSetting;
 begin
-  settingForm := TSetting.Create(nil);
-  settingForm.Show;
+    SSetting.Show;
 end;
 
 procedure TMainForm.btnCountClick(Sender: TObject);

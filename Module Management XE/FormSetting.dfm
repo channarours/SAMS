@@ -1,7 +1,7 @@
-object Setting: TSetting
+object SSetting: TSSetting
   Left = 0
   Top = 0
-  Caption = 'Setting'
+  Caption = 'SSetting'
   ClientHeight = 462
   ClientWidth = 784
   Color = clBtnFace
@@ -710,7 +710,7 @@ object Setting: TSetting
           end
           object btnOk: TButton
             Left = 305
-            Top = 181
+            Top = 179
             Width = 96
             Height = 25
             Caption = 'OK'
@@ -750,6 +750,80 @@ object Setting: TSetting
         Height = 232
         Align = alBottom
         TabOrder = 1
+        object TaskList: TLabel
+          Left = 16
+          Top = 8
+          Width = 41
+          Height = 13
+          Caption = 'Task List'
+        end
+        object ModuleList: TLabel
+          Left = 16
+          Top = 103
+          Width = 53
+          Height = 13
+          Caption = 'Module List'
+        end
+        object lvTaskList: TListView
+          Left = 16
+          Top = 27
+          Width = 537
+          Height = 70
+          Columns = <
+            item
+              Caption = 'No'
+            end
+            item
+              Caption = 'Title'
+            end
+            item
+              Caption = 'Type'
+            end
+            item
+              Caption = 'Date'
+            end
+            item
+              Caption = 'Time'
+            end
+            item
+              Caption = 'Modules'
+            end
+            item
+              Caption = 'Enable'
+            end>
+          TabOrder = 0
+          ViewStyle = vsReport
+        end
+        object lvTModuleList: TListView
+          Left = 16
+          Top = 122
+          Width = 537
+          Height = 71
+          Checkboxes = True
+          Columns = <
+            item
+              Caption = 'No'
+            end
+            item
+              Caption = 'Module Name'
+            end
+            item
+              Caption = 'Module Code'
+            end
+            item
+              Caption = 'Version'
+            end>
+          TabOrder = 1
+          ViewStyle = vsReport
+        end
+        object btnTSave: TButton
+          Left = 480
+          Top = 199
+          Width = 75
+          Height = 25
+          Caption = 'Save'
+          TabOrder = 2
+        end
       end
     end
   end

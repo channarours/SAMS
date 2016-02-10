@@ -6,8 +6,7 @@ uses
   FormParam in 'FormParam.pas' {Param},
   Vcl.Themes,
   Vcl.Styles,
-  //MySeed in 'MySeed.pas',
-  FormSetting in 'FormSetting.pas' {Setting};
+  FormSetting in 'FormSetting.pas' {SSetting};
 
 {$R *.res}
 
@@ -18,7 +17,7 @@ begin
   TStyleManager.TrySetStyle('Turquoise Gray');
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TParam, Param);
-  Application.CreateForm(TSetting, Setting);
+  Application.CreateForm(TSSetting, SSetting);
   Application.Run;
 
 end.

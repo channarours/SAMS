@@ -7,10 +7,11 @@ uses
   System.Classes, Vcl.Graphics,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.ComCtrls,
-  Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls,uUtilitise,uTaskSchedule;
+  Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls,uUtilitise
+  ,uTaskSchedule,MyMail,MySetting;
 
 type
-  TSetting = class(TForm)
+  TSSetting = class(TForm)
     ctgrypnlgrpSetting: TCategoryPanelGroup;
     ctgrypnlGeneral: TCategoryPanel;
     ctgrypnl2: TCategoryPanel;
@@ -80,6 +81,11 @@ type
     btnServerSave: TButton;
     btnCancel: TButton;
     chkMail: TCheckBox;
+    lvTaskList: TListView;
+    lvTModuleList: TListView;
+    btnTSave: TButton;
+    TaskList: TLabel;
+    ModuleList: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure tvTaskManagerClick(Sender: TObject);
     procedure tvGeneralClick(Sender: TObject);
@@ -100,9 +106,11 @@ type
 
 
 var
-  Setting: TSetting;
+  SSetting: TSSetting;
   myUtilitise:TUtilitise;
   mySchedule : TSchedule;
+  myUser:TUser;
+  myJsoun:TJsonUtility;
 
   AppPath : String;
   AppFullPath : string;
@@ -118,14 +126,15 @@ implementation
 const
   TaskTitle = 'SAMS'; // Task Title, use to apply task schedule setting
 
-procedure TSetting.btnCancleClick(Sender: TObject);
+procedure TSSetting.btnCancleClick(Sender: TObject);
 begin
   Self.Close;
 end;
 
-procedure TSetting.btnOkClick(Sender: TObject);
+procedure TSSetting.btnOkClick(Sender: TObject);
 var
 buttonSelected :Integer;
+str:String;
 begin
   case cbbtaskType.ItemIndex of
     0 : begin // on schedule
@@ -145,7 +154,6 @@ begin
       QueryTask:='/Create /SC '+cbbtaskType.Items[cbbtaskType.ItemIndex]+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /f';
     end;
     2 : begin // on start
-     // ShowMessage('2');
       myUtilitise.SetAutoStart_REG(AppFullPath,TaskTitle,true);
     end;
   end;
@@ -154,12 +162,26 @@ begin
     buttonSelected := messagedlg('Task Updated : '+cbbtaskType.Items[cbbtaskType.ItemIndex],mtWarning, mbOKCancel, 0);
     if buttonSelected = mrOK then
     begin
+      myUser:=TUser.Create;
+      with myUser.getSetting.getEmailSetting do
+      begin
+        addAccount('Home','Home');
+      end;
+
+      with myUser.getSetting.getScheduleSetting do
+      begin
+        addTask(1,'Pisal',TTaskType.onSchedule,TScheduleType.oneTime,dtpDatePick,dtpTimePick,AppFullPath);
+
+      end;
+      myJsoun:=TJsonUtility.create;
+      str:=myJsoun.toJson(myUser);
+      myUtilitise.CreateFile('test.txt',str);
       mySchedule.AddTask(QueryTask);
     end;
   end;
 end;
 
-procedure TSetting.btnRemoveClick(Sender: TObject);
+procedure TSSetting.btnRemoveClick(Sender: TObject);
 var
   buttonSelected :Integer;
 begin
@@ -172,7 +194,7 @@ begin
         end;
 end;
 
-procedure TSetting.cbbtaskTypeChange(Sender: TObject);
+procedure TSSetting.cbbtaskTypeChange(Sender: TObject);
 var
   itemTitle:String;
   itemIndex:Byte;
@@ -191,22 +213,22 @@ begin
 
 end;
 
-procedure TSetting.chklstDaysClick(Sender: TObject);
+procedure TSSetting.chklstDaysClick(Sender: TObject);
 begin
   dayPick:=myUtilitise.GetValueCheckListBox(chklstDays);
 end;
 
-procedure TSetting.dtpSStartDateChange(Sender: TObject);
+procedure TSSetting.dtpSStartDateChange(Sender: TObject);
 begin
   dtpDatePick:=DateToStr(dtpSStartDate.Date);
 end;
 
-procedure TSetting.dtpSTimeChange(Sender: TObject);
+procedure TSSetting.dtpSTimeChange(Sender: TObject);
 begin
   dtpTimePick:=TimeToStr(dtpSTime.time);
 end;
 
-procedure TSetting.FormCreate(Sender: TObject);
+procedure TSSetting.FormCreate(Sender: TObject);
 var
   lvX: Integer;
 begin
@@ -225,7 +247,7 @@ begin
   AppFullPath:=Application.ExeName;
 end;
 
-procedure TSetting.rgChooseClick(Sender: TObject);
+procedure TSSetting.rgChooseClick(Sender: TObject);
 var index:Byte;
 begin
       index:=rgChoose.ItemIndex;
@@ -255,7 +277,7 @@ end;
 
 
 
-procedure TSetting.tvGeneralClick(Sender: TObject);
+procedure TSSetting.tvGeneralClick(Sender: TObject);
 var
   selectText: String;
 begin
@@ -295,7 +317,7 @@ begin
 
 end;
 
-procedure TSetting.tvTaskManagerClick(Sender: TObject);
+procedure TSSetting.tvTaskManagerClick(Sender: TObject);
 var
   selectText: String;
 begin
