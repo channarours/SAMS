@@ -203,7 +203,7 @@ end;
 
 procedure TSetting.dtpSTimeChange(Sender: TObject);
 begin
-  dtpTimePick:=myUtilitise.ConvertTime12To24(TimeToStr(dtpSTime.time));
+  dtpTimePick:=TimeToStr(dtpSTime.time);
 end;
 
 procedure TSetting.FormCreate(Sender: TObject);

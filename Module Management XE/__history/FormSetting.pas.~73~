@@ -90,6 +90,7 @@ type
     procedure dtpSStartDateChange(Sender: TObject);
     procedure dtpSTimeChange(Sender: TObject);
     procedure btnOkClick(Sender: TObject);
+    procedure btnRemoveClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -123,8 +124,8 @@ begin
 end;
 
 procedure TSetting.btnOkClick(Sender: TObject);
-
-
+var
+buttonSelected :Integer;
 begin
   case cbbtaskType.ItemIndex of
     0 : begin // on schedule
@@ -139,15 +140,36 @@ begin
           QueryTask:='/Create /SC '+rgOption+' /D '+dayPick+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /ST '+dtpTimePick+' /f';
         end;
       end;
-
     end;
     1 : begin // on logon
-
+      QueryTask:='/Create /SC '+cbbtaskType.Items[cbbtaskType.ItemIndex]+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /f';
     end;
     2 : begin // on start
-
+     // ShowMessage('2');
+      myUtilitise.SetAutoStart_REG(AppFullPath,TaskTitle,true);
     end;
   end;
+  if cbbtaskType.ItemIndex <> 2 then
+  begin
+    buttonSelected := messagedlg('Task Updated : '+cbbtaskType.Items[cbbtaskType.ItemIndex],mtWarning, mbOKCancel, 0);
+    if buttonSelected = mrOK then
+    begin
+      mySchedule.AddTask(QueryTask);
+    end;
+  end;
+end;
+
+procedure TSetting.btnRemoveClick(Sender: TObject);
+var
+  buttonSelected :Integer;
+begin
+
+  buttonSelected := messagedlg('Task Remove',mtWarning, mbOKCancel, 0);
+      if buttonSelected = mrOK then
+        begin
+          mySchedule.RemoveTask(TaskTitle);
+          myUtilitise.RemoveEntryFromRegistry(TaskTitle);
+        end;
 end;
 
 procedure TSetting.cbbtaskTypeChange(Sender: TObject);

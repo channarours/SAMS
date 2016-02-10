@@ -652,7 +652,7 @@ object Setting: TSetting
             Width = 96
             Height = 24
             Date = 42400.000000000000000000
-            Format = 'hh:mm:ss'
+            Format = 'HH:mm:ss'
             Time = 42400.000000000000000000
             DateMode = dmUpDown
             TabOrder = 2
