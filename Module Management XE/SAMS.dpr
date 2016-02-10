@@ -6,7 +6,8 @@ uses
   FormParam in 'FormParam.pas' {Param},
   Vcl.Themes,
   Vcl.Styles,
-  FormSetting in 'FormSetting.pas' {SSetting};
+  FormSetting in 'FormSetting.pas' {SSetting},
+  FormModuleInfo in 'FormModuleInfo.pas' {frmModuleInfo};
 
 {$R *.res}
 
@@ -17,7 +18,8 @@ begin
   TStyleManager.TrySetStyle('Turquoise Gray');
   Application.CreateForm(TMainForm, MainForm);
   Application.CreateForm(TParam, Param);
-  Application.CreateForm(TSSetting, SSetting);
+  Application.CreateForm(TFSetting, SSetting);
+  Application.CreateForm(TfrmModuleInfo, frmModuleInfo);
   Application.Run;
 
 end.

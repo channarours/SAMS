@@ -859,13 +859,22 @@ object FSetting: TFSetting
             end
             item
               Caption = 'Version'
-              Width = 317
+              Width = 200
+            end
+            item
+              Caption = 'Information'
+              Width = 117
             end>
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ReadOnly = True
+          RowSelect = True
+          ParentFont = False
           TabOrder = 0
           ViewStyle = vsReport
-          ExplicitLeft = -36
-          ExplicitTop = -84
-          ExplicitHeight = 262
         end
         object pnlBBModuleSetting: TPanel
           Left = 1
@@ -883,6 +892,7 @@ object FSetting: TFSetting
             Align = alRight
             Caption = 'Update Infomation'
             TabOrder = 0
+            OnClick = btnAddModuleInfoClick
             ExplicitLeft = 499
           end
         end

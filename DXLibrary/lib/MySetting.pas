@@ -639,12 +639,24 @@ begin
   UserJson := TJSONObject.Create;
   UserJson.Parse(BytesOf(json),0);
 
+  User.Setuid(StrToInt((UserJson.Get('id').JsonValue as TJSONString).Value));
+  User.Setname((UserJson.Get('username').JsonValue as TJSONString).Value);
+  User.Setpass((UserJson.Get('password').JsonValue as TJSONString).Value);
+
+
     // Check User Type { Get key value from json (obj.Get(key).JsonValue as TJsonString).value
 
   if SameText(((UserJson.Get('type').JsonValue as TJSONString).Value),'Admin')
      or SameText(((UserJson.Get('type').JsonValue as TJSONString).Value),'Normal')
   then
     begin
+        if SameText(((UserJson.Get('type').JsonValue as TJSONString).Value),'Admin')  then
+        begin
+          User.SetuType(TUserType.Admin);
+        end
+        else
+            User.SetuType(TUserType.Normal);
+
        Setting := TJSONObject.Create;
        ModuleSetting := TJSONObject.Create;
        EmailSetting := TJSONObject.Create;

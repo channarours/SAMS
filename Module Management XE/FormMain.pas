@@ -107,7 +107,7 @@ type
   end;
 var
   MainForm: TMainForm;
-  TMSetting: TSSetting;
+  TMSetting: TFSetting;
   FmyUser:TUser;
 
 implementation

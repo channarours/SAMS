@@ -8,7 +8,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.ComCtrls,
   Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls,uUtilitise
-  ,uTaskSchedule,MyMail,MySetting,Vcl.FileCtrl,uMethod;
+  ,uTaskSchedule,MyMail,MySetting,Vcl.FileCtrl,uMethod,FormModuleInfo;
 
 type
   TFSetting = class(TForm)
@@ -102,6 +102,7 @@ type
     procedure btnOkClick(Sender: TObject);
     procedure btnRemoveClick(Sender: TObject);
     procedure btnModuleDirsClick(Sender: TObject);
+    procedure btnAddModuleInfoClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -130,6 +131,12 @@ implementation
 {$R *.dfm}
 const
   TaskTitle = 'SAMS'; // Task Title, use to apply task schedule setting
+
+procedure TFSetting.btnAddModuleInfoClick(Sender: TObject);
+
+begin
+  frmModuleInfo.Show;
+end;
 
 procedure TFSetting.btnCancleClick(Sender: TObject);
 begin
