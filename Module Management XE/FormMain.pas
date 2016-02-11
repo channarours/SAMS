@@ -9,7 +9,7 @@ uses
   Vcl.WinXCtrls, Vcl.ComCtrls, uMethod, System.IniFiles, MySeed, FormParam,
   mTypes, GetKHAversion, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
-  IdSMTPBase, IdSMTP,Contnrs,FormSetting,MySetting,MyMail,uUtilitise;
+  IdSMTPBase, IdSMTP,Contnrs,FormSetting,MySetting,MyMail,uUtilitise,MyObject;
 
 const
   wm_start = WM_USER + $1005;
@@ -158,6 +158,8 @@ end;
 
 { Panel Main Form code implementation -------> }
 procedure TMainForm.FormCreate(Sender: TObject);
+var
+  strs :String;
 begin
   pnlModuelInfo.Visible := false;
   pnlMainForm.Visible := True;
@@ -170,6 +172,9 @@ begin
 
   // Transfer file to object myUser
   ShowMessage(myUtilitise.ReadFile('test.txt'));
+   sUserTemp := TUser.Create;
+   strs      := myUtilitise.ReadFile('test.txt');
+   sUserTemp := myJsoun.fromJson(strs);
 
  // myUser:=myJsoun.fromJson(myUtilitise.ReadFile('test.txt'));
   //ShowMessage( myUser.getSetting.getScheduleSetting.getTask.Items[0].GetfileURL);
@@ -460,26 +465,24 @@ begin
   if pos(M_SDT_RESULT, dclDataStr) <> 0 then
      begin
      //ShowMessage(dclDataStr);
-     for I := 0 to ModuleList.Count - 1 do
-    begin
-      if SameText(dclSMName,ModuleList.getModule(i).name) then
-      begin
-        ModuleList.getModule(i).result := dclSMStatus;
-      end;
-    end;
-
+      for I := 0 to ModuleList.Count - 1 do
+        begin
+          if SameText(dclSMName,ModuleList.getModule(i).name) then
+          begin
+            ModuleList.getModule(i).result := dclSMStatus;
+          end;
+        end;
      end;
   if pos(M_SDT_STATUS, dclDataStr) <> 0 then
        //ShowMessage(dclDataStr);
       begin
         for I := 0 to ModuleList.Count - 1 do
-    begin
-      if SameText(dclSMName,ModuleList.getModule(i).name) then
-      begin
-        ModuleList.getModule(i).status := dclSMStatus;
-      end;
-    end;
-
+          begin
+            if SameText(dclSMName,ModuleList.getModule(i).name) then
+            begin
+              ModuleList.getModule(i).status := dclSMStatus;
+            end;
+          end;
       end;
   if pos(M_SDT_ERROR, dclDataStr) <> 0 then
        //ShowMessage(dclDataStr);
@@ -645,7 +648,7 @@ begin
     end;
     ShowMessage(mResult);
   end;
-
+  ShowMessage(IntToStr(sUserTemp.getSetting.getScheduleSetting.getTask.Items[0].GetTaskid));
 end;
 
 procedure TMainForm.btnDeleteClick(Sender: TObject);

@@ -8,7 +8,7 @@ uses
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
   Vcl.ComCtrls,
   Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls,uUtilitise
-  ,uTaskSchedule,MyMail,MySetting,Vcl.FileCtrl,uMethod,FormModuleInfo;
+  ,uTaskSchedule,MyMail,MySetting,Vcl.FileCtrl,uMethod,FormModuleInfo,myobject;
 
 type
   TFSetting = class(TForm)
@@ -285,7 +285,8 @@ begin
   pnlASchedule.Visible := False;
   pnlMailSetting.Visible := False;
   pnlModuleSetting.Visible := False;
-
+  sUserTemp.getSetting.getScheduleSetting.getTask.Items[0].Setid(2);
+  ShowMessage(sUserTemp.getSetting.getScheduleSetting.getTask.Items[0].GetfileURL);
   AppPath:=ExtractFilePath(Application.ExeName);
   AppFullPath:=Application.ExeName;
 end;

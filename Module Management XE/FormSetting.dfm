@@ -422,8 +422,6 @@ object FSetting: TFSetting
       Height = 460
       Align = alClient
       TabOrder = 3
-      ExplicitWidth = 578
-      ExplicitHeight = 268
       object pnlASTop: TPanel
         Left = 1
         Top = 1
@@ -431,7 +429,6 @@ object FSetting: TFSetting
         Height = 232
         Align = alTop
         TabOrder = 0
-        ExplicitWidth = 576
         object grpAStop: TGroupBox
           AlignWithMargins = True
           Left = 26
@@ -451,7 +448,6 @@ object FSetting: TFSetting
           Font.Style = []
           ParentFont = False
           TabOrder = 0
-          ExplicitWidth = 524
           object lblBegintask: TLabel
             Left = 16
             Top = 24
@@ -592,8 +588,6 @@ object FSetting: TFSetting
         Height = 232
         Align = alBottom
         TabOrder = 1
-        ExplicitTop = 35
-        ExplicitWidth = 576
         object TaskList: TLabel
           Left = 16
           Top = 8
@@ -838,8 +832,6 @@ object FSetting: TFSetting
           Height = 13
           Align = alTop
           Caption = 'Contain module list :'
-          ExplicitLeft = 272
-          ExplicitTop = 128
           ExplicitWidth = 97
         end
         object lvmoduleSetting: TListView
@@ -893,7 +885,6 @@ object FSetting: TFSetting
             Caption = 'Update Infomation'
             TabOrder = 0
             OnClick = btnAddModuleInfoClick
-            ExplicitLeft = 499
           end
         end
       end
