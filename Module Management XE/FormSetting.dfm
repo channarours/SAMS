@@ -84,337 +84,6 @@ object FSetting: TFSetting
     Height = 462
     Align = alClient
     TabOrder = 1
-    object pnlMailSetting: TPanel
-      Left = 1
-      Top = 1
-      Width = 582
-      Height = 460
-      Align = alClient
-      TabOrder = 2
-      object pnlTEmailSetting: TPanel
-        Left = 1
-        Top = 1
-        Width = 580
-        Height = 272
-        Align = alTop
-        TabOrder = 0
-        object grpMailSetting: TGroupBox
-          AlignWithMargins = True
-          Left = 26
-          Top = 26
-          Width = 528
-          Height = 235
-          Margins.Left = 25
-          Margins.Top = 25
-          Margins.Right = 25
-          Margins.Bottom = 10
-          Align = alClient
-          Caption = ' Configuration :'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = []
-          ParentFont = False
-          TabOrder = 0
-          object lblserver: TLabel
-            Left = 48
-            Top = 30
-            Width = 47
-            Height = 16
-            Caption = 'Server :'
-          end
-          object lblserverpost: TLabel
-            Left = 67
-            Top = 60
-            Width = 28
-            Height = 16
-            Caption = 'Port:'
-          end
-          object lblEncryptSSL: TLabel
-            Left = 221
-            Top = 61
-            Width = 58
-            Height = 16
-            Caption = 'TLS/SSL :'
-          end
-          object edtMailServer: TEdit
-            Left = 101
-            Top = 27
-            Width = 356
-            Height = 24
-            TabOrder = 0
-            TextHint = 'Input smtp server ...'
-          end
-          object edtServerPort: TEdit
-            Left = 101
-            Top = 56
-            Width = 118
-            Height = 24
-            TabOrder = 1
-            TextHint = 'port number'
-          end
-          object cbbSSL: TComboBox
-            Left = 289
-            Top = 57
-            Width = 96
-            Height = 24
-            TabOrder = 2
-          end
-          object grpMailUserPass: TGroupBox
-            AlignWithMargins = True
-            Left = 27
-            Top = 114
-            Width = 474
-            Height = 109
-            Margins.Left = 25
-            Margins.Top = 5
-            Margins.Right = 25
-            Margins.Bottom = 10
-            Align = alBottom
-            Caption = ' Information :'
-            TabOrder = 3
-            object lblPassword: TLabel
-              Left = 76
-              Top = 49
-              Width = 64
-              Height = 16
-              Caption = 'Password :'
-            end
-            object lblUsername: TLabel
-              Left = 73
-              Top = 21
-              Width = 67
-              Height = 16
-              Caption = 'Username :'
-            end
-            object btnMailSave: TButton
-              Left = 283
-              Top = 77
-              Width = 75
-              Height = 25
-              Caption = 'Apply'
-              TabOrder = 0
-            end
-            object btnConnect: TButton
-              Left = 146
-              Top = 77
-              Width = 75
-              Height = 25
-              Caption = 'Connect'
-              TabOrder = 1
-            end
-            object edtUsername: TEdit
-              Left = 146
-              Top = 19
-              Width = 211
-              Height = 24
-              TabOrder = 2
-              TextHint = 'enter username'
-            end
-            object edtPassword: TEdit
-              Left = 146
-              Top = 47
-              Width = 211
-              Height = 24
-              PasswordChar = '*'
-              TabOrder = 3
-              TextHint = 'enter password'
-            end
-          end
-          object btnServerSave: TButton
-            Left = 246
-            Top = 88
-            Width = 66
-            Height = 25
-            Caption = 'Save'
-            TabOrder = 4
-          end
-          object btnCancel: TButton
-            Left = 318
-            Top = 87
-            Width = 66
-            Height = 25
-            Caption = 'Cancel'
-            TabOrder = 5
-          end
-        end
-      end
-    end
-    object pnlErrorSetting: TPanel
-      Left = 1
-      Top = 1
-      Width = 582
-      Height = 460
-      Align = alClient
-      TabOrder = 0
-      object pnlErrorTop: TPanel
-        Left = 1
-        Top = 1
-        Width = 580
-        Height = 158
-        Align = alTop
-        TabOrder = 0
-        object grpErrorKey: TGroupBox
-          AlignWithMargins = True
-          Left = 16
-          Top = 16
-          Width = 548
-          Height = 126
-          Margins.Left = 15
-          Margins.Top = 15
-          Margins.Right = 15
-          Margins.Bottom = 15
-          Align = alClient
-          Caption = ' Setting :'
-          TabOrder = 0
-          object lblKeycode: TLabel
-            Left = 80
-            Top = 23
-            Width = 32
-            Height = 13
-            Caption = 'Code :'
-          end
-          object lblDefinition: TLabel
-            Left = 60
-            Top = 47
-            Width = 52
-            Height = 13
-            Caption = 'Definition :'
-          end
-          object edtkeycode: TEdit
-            Left = 117
-            Top = 15
-            Width = 316
-            Height = 21
-            Alignment = taCenter
-            AutoSelect = False
-            AutoSize = False
-            BevelInner = bvNone
-            BevelOuter = bvNone
-            TabOrder = 0
-          end
-          object mmoKeyDefinition: TMemo
-            Left = 118
-            Top = 41
-            Width = 315
-            Height = 75
-            TabOrder = 1
-          end
-        end
-      end
-      object pnlErrorButtom: TPanel
-        Left = 1
-        Top = 159
-        Width = 580
-        Height = 300
-        Align = alClient
-        TabOrder = 1
-        object lvErrorKeys: TListView
-          AlignWithMargins = True
-          Left = 11
-          Top = 33
-          Width = 558
-          Height = 256
-          Margins.Left = 10
-          Margins.Top = 0
-          Margins.Right = 10
-          Margins.Bottom = 10
-          Align = alClient
-          Columns = <
-            item
-              Caption = 'ID'
-            end
-            item
-              Caption = 'Key Code'
-            end
-            item
-              Caption = 'Definition'
-            end>
-          TabOrder = 0
-          ViewStyle = vsReport
-        end
-        object pnlErrorKeyTButtom: TPanel
-          Left = 1
-          Top = 1
-          Width = 578
-          Height = 32
-          Align = alTop
-          BevelOuter = bvNone
-          Padding.Right = 10
-          TabOrder = 1
-          object lblSearchkey: TLabel
-            Left = 10
-            Top = 8
-            Width = 39
-            Height = 16
-            Caption = 'Enter :'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object srchErrorKey: TSearchBox
-            Left = 63
-            Top = 3
-            Width = 209
-            Height = 25
-            AutoSelect = False
-            AutoSize = False
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            TabOrder = 0
-            TextHint = 'Enter Key code ...'
-            ButtonWidth = 25
-          end
-          object btnView: TButton
-            AlignWithMargins = True
-            Left = 493
-            Top = 2
-            Width = 75
-            Height = 28
-            Margins.Top = 2
-            Margins.Right = 0
-            Margins.Bottom = 2
-            Align = alRight
-            Caption = 'View'
-            TabOrder = 1
-          end
-          object btnDelete: TButton
-            AlignWithMargins = True
-            Left = 415
-            Top = 2
-            Width = 75
-            Height = 28
-            Margins.Top = 2
-            Margins.Right = 0
-            Margins.Bottom = 2
-            Align = alRight
-            Caption = 'Delete'
-            TabOrder = 2
-          end
-          object btnSave: TButton
-            AlignWithMargins = True
-            Left = 337
-            Top = 2
-            Width = 75
-            Height = 28
-            Margins.Top = 2
-            Margins.Right = 0
-            Margins.Bottom = 2
-            Align = alRight
-            Caption = 'Save'
-            TabOrder = 3
-          end
-        end
-      end
-    end
     object pnlASchedule: TPanel
       Left = 1
       Top = 1
@@ -664,6 +333,144 @@ object FSetting: TFSetting
         end
       end
     end
+    object pnlErrorSetting: TPanel
+      Left = 1
+      Top = 1
+      Width = 582
+      Height = 460
+      Align = alClient
+      TabOrder = 0
+      object pnlErrorTop: TPanel
+        Left = 1
+        Top = 1
+        Width = 580
+        Height = 158
+        Align = alTop
+        TabOrder = 0
+        object grpErrorKey: TGroupBox
+          AlignWithMargins = True
+          Left = 16
+          Top = 16
+          Width = 548
+          Height = 126
+          Margins.Left = 15
+          Margins.Top = 15
+          Margins.Right = 15
+          Margins.Bottom = 15
+          Align = alClient
+          Caption = ' Setting :'
+          TabOrder = 0
+          object lblKeycode: TLabel
+            Left = 80
+            Top = 23
+            Width = 32
+            Height = 13
+            Caption = 'Code :'
+          end
+          object lblDefinition: TLabel
+            Left = 60
+            Top = 47
+            Width = 52
+            Height = 13
+            Caption = 'Definition :'
+          end
+          object edtkeycode: TEdit
+            Left = 117
+            Top = 15
+            Width = 316
+            Height = 21
+            Alignment = taCenter
+            AutoSelect = False
+            AutoSize = False
+            BevelInner = bvNone
+            BevelOuter = bvNone
+            TabOrder = 0
+          end
+          object mmoKeyDefinition: TMemo
+            Left = 118
+            Top = 41
+            Width = 315
+            Height = 75
+            TabOrder = 1
+          end
+        end
+      end
+      object pnlErrorButtom: TPanel
+        Left = 1
+        Top = 159
+        Width = 580
+        Height = 300
+        Align = alClient
+        TabOrder = 1
+        object pnlErrorKeyTButtom: TPanel
+          Left = 1
+          Top = 1
+          Width = 578
+          Height = 32
+          Align = alTop
+          BevelOuter = bvNone
+          Padding.Right = 10
+          TabOrder = 0
+          object lblSearchkey: TLabel
+            Left = 15
+            Top = 7
+            Width = 39
+            Height = 16
+            Caption = 'Enter :'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object btnSave: TButton
+            AlignWithMargins = True
+            Left = 493
+            Top = 2
+            Width = 75
+            Height = 28
+            Margins.Top = 2
+            Margins.Right = 0
+            Margins.Bottom = 2
+            Align = alRight
+            Caption = 'Save'
+            TabOrder = 0
+            OnClick = btnSaveClick
+            ExplicitLeft = 337
+          end
+          object edtkeySearch: TEdit
+            Left = 73
+            Top = 6
+            Width = 376
+            Height = 21
+            Hint = 'key code'
+            TabOrder = 1
+            OnKeyUp = edtkeySearchKeyUp
+          end
+        end
+        object lvErrorKeys: TListView
+          Left = 16
+          Top = 39
+          Width = 553
+          Height = 250
+          Columns = <
+            item
+              Caption = 'ID'
+            end
+            item
+              Caption = 'Code'
+            end
+            item
+              Caption = 'Definition'
+            end>
+          RowSelect = True
+          TabOrder = 1
+          ViewStyle = vsReport
+          OnDblClick = lvErrorKeysDblClick
+        end
+      end
+    end
     object pnlModuleSetting: TPanel
       Left = 1
       Top = 1
@@ -671,6 +478,76 @@ object FSetting: TFSetting
       Height = 460
       Align = alClient
       TabOrder = 1
+      object pnlBModuleSetting: TPanel
+        Left = 1
+        Top = 189
+        Width = 580
+        Height = 270
+        Align = alClient
+        TabOrder = 1
+        object lblCurrentModule: TLabel
+          Left = 1
+          Top = 1
+          Width = 578
+          Height = 13
+          Align = alTop
+          Caption = 'Contain module list :'
+          ExplicitWidth = 97
+        end
+        object lvmoduleSetting: TListView
+          AlignWithMargins = True
+          Left = 4
+          Top = 17
+          Width = 572
+          Height = 217
+          Align = alClient
+          Columns = <
+            item
+              Caption = 'No'
+            end
+            item
+              Caption = 'Module Code'
+              Width = 200
+            end
+            item
+              Caption = 'Version'
+              Width = 200
+            end
+            item
+              Caption = 'Information'
+              Width = 117
+            end>
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = []
+          ReadOnly = True
+          RowSelect = True
+          ParentFont = False
+          TabOrder = 0
+          ViewStyle = vsReport
+        end
+        object pnlBBModuleSetting: TPanel
+          Left = 1
+          Top = 237
+          Width = 578
+          Height = 32
+          Align = alBottom
+          TabOrder = 1
+          object btnAddModuleInfo: TButton
+            AlignWithMargins = True
+            Left = 474
+            Top = 4
+            Width = 100
+            Height = 24
+            Align = alRight
+            Caption = 'Update Infomation'
+            TabOrder = 0
+            OnClick = btnAddModuleInfoClick
+          end
+        end
+      end
       object pnlTModuleSetting: TPanel
         Left = 1
         Top = 1
@@ -818,75 +695,201 @@ object FSetting: TFSetting
           end
         end
       end
-      object pnlBModuleSetting: TPanel
+    end
+    object pnlMailSetting: TPanel
+      Left = 1
+      Top = 1
+      Width = 582
+      Height = 460
+      Align = alClient
+      TabOrder = 2
+      object T1: TLabel
+        Left = 5
+        Top = 279
+        Width = 58
+        Height = 13
+        Caption = 'Server List :'
+      end
+      object pnlTEmailSetting: TPanel
         Left = 1
-        Top = 189
+        Top = 1
         Width = 580
-        Height = 270
-        Align = alClient
-        TabOrder = 1
-        object lblCurrentModule: TLabel
-          Left = 1
-          Top = 1
-          Width = 578
-          Height = 13
-          Align = alTop
-          Caption = 'Contain module list :'
-          ExplicitWidth = 97
-        end
-        object lvmoduleSetting: TListView
+        Height = 272
+        Align = alTop
+        TabOrder = 0
+        object grpMailSetting: TGroupBox
           AlignWithMargins = True
-          Left = 4
-          Top = 17
-          Width = 572
-          Height = 217
+          Left = 26
+          Top = 26
+          Width = 528
+          Height = 235
+          Margins.Left = 25
+          Margins.Top = 25
+          Margins.Right = 25
+          Margins.Bottom = 10
           Align = alClient
-          Columns = <
-            item
-              Caption = 'No'
-            end
-            item
-              Caption = 'Module Code'
-              Width = 200
-            end
-            item
-              Caption = 'Version'
-              Width = 200
-            end
-            item
-              Caption = 'Information'
-              Width = 117
-            end>
+          Caption = ' Configuration :'
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -13
           Font.Name = 'Tahoma'
           Font.Style = []
-          ReadOnly = True
-          RowSelect = True
           ParentFont = False
           TabOrder = 0
-          ViewStyle = vsReport
-        end
-        object pnlBBModuleSetting: TPanel
-          Left = 1
-          Top = 237
-          Width = 578
-          Height = 32
-          Align = alBottom
-          TabOrder = 1
-          object btnAddModuleInfo: TButton
-            AlignWithMargins = True
-            Left = 474
-            Top = 4
-            Width = 100
+          object lblserver: TLabel
+            Left = 48
+            Top = 30
+            Width = 47
+            Height = 16
+            Caption = 'Server :'
+          end
+          object lblserverpost: TLabel
+            Left = 67
+            Top = 60
+            Width = 28
+            Height = 16
+            Caption = 'Port:'
+          end
+          object lblEncryptSSL: TLabel
+            Left = 221
+            Top = 61
+            Width = 58
+            Height = 16
+            Caption = 'TLS/SSL :'
+          end
+          object edtMailServer: TEdit
+            Left = 101
+            Top = 27
+            Width = 356
             Height = 24
-            Align = alRight
-            Caption = 'Update Infomation'
             TabOrder = 0
-            OnClick = btnAddModuleInfoClick
+            TextHint = 'Input smtp server ...'
+          end
+          object edtServerPort: TEdit
+            Left = 101
+            Top = 56
+            Width = 118
+            Height = 24
+            TabOrder = 1
+            TextHint = 'port number'
+          end
+          object cbbSSL: TComboBox
+            Left = 289
+            Top = 57
+            Width = 96
+            Height = 24
+            TabOrder = 2
+            Items.Strings = (
+              'True'
+              'False')
+          end
+          object grpMailUserPass: TGroupBox
+            AlignWithMargins = True
+            Left = 27
+            Top = 114
+            Width = 474
+            Height = 109
+            Margins.Left = 25
+            Margins.Top = 5
+            Margins.Right = 25
+            Margins.Bottom = 10
+            Align = alBottom
+            Caption = ' Information :'
+            TabOrder = 3
+            object lblPassword: TLabel
+              Left = 76
+              Top = 49
+              Width = 64
+              Height = 16
+              Caption = 'Password :'
+            end
+            object lblUsername: TLabel
+              Left = 73
+              Top = 21
+              Width = 67
+              Height = 16
+              Caption = 'Username :'
+            end
+            object btnMailApply: TButton
+              Left = 283
+              Top = 77
+              Width = 75
+              Height = 25
+              Caption = 'Apply'
+              TabOrder = 0
+              OnClick = btnMailApplyClick
+            end
+            object btnConnect: TButton
+              Left = 146
+              Top = 77
+              Width = 75
+              Height = 25
+              Caption = 'Connect'
+              TabOrder = 1
+              OnClick = btnConnectClick
+            end
+            object edtUsername: TEdit
+              Left = 146
+              Top = 19
+              Width = 211
+              Height = 24
+              TabOrder = 2
+              TextHint = 'enter username'
+            end
+            object edtPassword: TEdit
+              Left = 146
+              Top = 47
+              Width = 211
+              Height = 24
+              PasswordChar = '*'
+              TabOrder = 3
+              TextHint = 'enter password'
+            end
+          end
+          object btnServerSave: TButton
+            Left = 246
+            Top = 88
+            Width = 66
+            Height = 25
+            Caption = 'Save'
+            TabOrder = 4
+            OnClick = btnServerSaveClick
+          end
+          object btnCancel: TButton
+            Left = 318
+            Top = 87
+            Width = 66
+            Height = 25
+            Caption = 'Cancel'
+            TabOrder = 5
           end
         end
+      end
+      object lvServerList: TListView
+        Left = 5
+        Top = 298
+        Width = 572
+        Height = 150
+        Columns = <
+          item
+            Caption = 'No'
+          end
+          item
+            Caption = 'Servers'
+          end
+          item
+            Caption = 'Port'
+          end
+          item
+            Caption = 'Security'
+          end
+          item
+            Caption = 'Primary'
+          end>
+        RowSelect = True
+        TabOrder = 1
+        ViewStyle = vsReport
+        OnSelectItem = lvServerListSelectItem
       end
     end
   end

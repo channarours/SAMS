@@ -22,11 +22,11 @@
     <Transaction>2016/01/31 15:24:43.000.334,D:\KSHRD\Delphi\XE Project\Module Management System\Unit1.pas=D:\KSHRD\Delphi\XE Project\Module Management System\FormSetting.pas</Transaction>
     <Transaction>2016/01/31 21:14:54.000.091,D:\KSHRD\Delphi\XE Project\Module Management System\MMS.dproj=D:\KSHRD\Delphi\XE Project\Module Management System\SAMS.dproj</Transaction>
     <Transaction>2016/02/03 16:03:24.000.214,D:\KSHRD\Delphi\XE Project\Module Management XE\SAMS.dproj=D:\KSHRD\Delphi\XE Project\Module Management System\SAMS.dproj</Transaction>
-    <Transaction>2016/02/10 20:59:02.030,=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.pas</Transaction>
-    <Transaction>2016/02/10 20:59:20.754,C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\MyObject.pas=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.pas</Transaction>
-    <Transaction>2016/02/11 03:40:22.151,=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.pas</Transaction>
-    <Transaction>2016/02/11 03:41:18.994,C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\FormModuleInfo.pas=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.pas</Transaction>
-    <Transaction>2016/02/11 03:41:18.994,C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\FormModuleInfo.dfm=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.dfm</Transaction>
+    <Transaction>2016/02/10 20:59:02.000.030,=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.pas</Transaction>
+    <Transaction>2016/02/10 20:59:20.000.754,C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\MyObject.pas=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.pas</Transaction>
+    <Transaction>2016/02/11 03:40:22.000.151,=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.pas</Transaction>
+    <Transaction>2016/02/11 03:41:18.000.994,C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\FormModuleInfo.pas=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.pas</Transaction>
+    <Transaction>2016/02/11 03:41:18.000.994,C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\FormModuleInfo.dfm=C:\Users\Lenovo\Documents\GitHub\SAMS\Module Management XE\Unit1.dfm</Transaction>
   </Transactions>
 	<ActiveMobileDevice>
 		<NoProfile iOSSimulator="iPhone5"/>

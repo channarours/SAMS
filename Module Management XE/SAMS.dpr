@@ -7,12 +7,17 @@ uses
   Vcl.Themes,
   Vcl.Styles,
   FormSetting in 'FormSetting.pas' {SSetting},
-  FormModuleInfo in 'FormModuleInfo.pas' {frmModuleInfo};
+  FormModuleInfo in 'FormModuleInfo.pas' {frmModuleInfo},
+  MyObject,MySetting;
 
 {$R *.res}
 
 begin
   Application.Initialize;
+  // Transfer file to Object
+  sUserTemp := TUser.Create;
+  sUserTemp := myJsoun.fromJson(myUtilitise.ReadFile('core.txt'));
+  //-----------------------------------------------------
   Application.MainFormOnTaskbar := True;
   Application.Title := 'Semi-Automatic Module Scraping Monitoring System';
   TStyleManager.TrySetStyle('Turquoise Gray');

@@ -3,12 +3,11 @@ unit FormSetting;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
-  Vcl.ComCtrls,
-  Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls,uUtilitise
-  ,uTaskSchedule,MyMail,MySetting,Vcl.FileCtrl,uMethod,FormModuleInfo,myobject;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls,
+  Vcl.ComCtrls, Vcl.CheckLst, System.Actions, Vcl.ActnList, Vcl.WinXCtrls,
+  uUtilitise, uTaskSchedule, MyMail, MySetting, Vcl.FileCtrl, uMethod,
+  FormModuleInfo, myobject, Grids;
 
 type
   TFSetting = class(TForm)
@@ -37,12 +36,8 @@ type
     pnlErrorSetting: TPanel;
     pnlErrorTop: TPanel;
     pnlErrorButtom: TPanel;
-    lvErrorKeys: TListView;
     pnlErrorKeyTButtom: TPanel;
-    srchErrorKey: TSearchBox;
     lblSearchkey: TLabel;
-    btnView: TButton;
-    btnDelete: TButton;
     btnSave: TButton;
     grpErrorKey: TGroupBox;
     lblKeycode: TLabel;
@@ -72,7 +67,7 @@ type
     lblEncryptSSL: TLabel;
     cbbSSL: TComboBox;
     grpMailUserPass: TGroupBox;
-    btnMailSave: TButton;
+    btnMailApply: TButton;
     btnConnect: TButton;
     edtUsername: TEdit;
     edtPassword: TEdit;
@@ -90,6 +85,10 @@ type
     lblCurrentModule: TLabel;
     pnlBBModuleSetting: TPanel;
     btnAddModuleInfo: TButton;
+    lvErrorKeys: TListView;
+    edtkeySearch: TEdit;
+    lvServerList: TListView;
+    T1: TLabel;
     procedure FormCreate(Sender: TObject);
     procedure tvTaskManagerClick(Sender: TObject);
     procedure tvGeneralClick(Sender: TObject);
@@ -103,39 +102,47 @@ type
     procedure btnRemoveClick(Sender: TObject);
     procedure btnModuleDirsClick(Sender: TObject);
     procedure btnAddModuleInfoClick(Sender: TObject);
+    procedure btnSaveClick(Sender: TObject);
+    procedure lvErrorKeysDblClick(Sender: TObject);
+    procedure edtkeySearchKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure btnServerSaveClick(Sender: TObject);
+    procedure btnConnectClick(Sender: TObject);
+    procedure btnMailApplyClick(Sender: TObject);
+    procedure lvServerListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
   private
     { Private declarations }
   public
     { Public declarations }
   end;
 
-
-
 var
   SSetting: TFSetting;
-  myUtilitise:TUtilitise;
-  mySchedule : TSchedule;
-  myUser:TUser;
-  myJsoun:TJsonUtility;
+  myUtilitise: TUtilitise;
+  mySchedule: TSchedule;
+  myUser: TUser;
+  myJsoun: TJsonUtility;
+  myMail: IMail;
+  AppPath: string;
+  AppFullPath: string;
+  rgOption: string;
+  dtpDatePick: string;
+  dtpTimePick: string;
+  dayPick: string;
+  QueryTask: string;
+  keydata: string;
+  code, defi: string;
 
-  AppPath : String;
-  AppFullPath : string;
-
-  rgOption:String;
-  dtpDatePick:String;
-  dtpTimePick:String;
-  dayPick : String;
-  QueryTask:String;
 implementation
 
 {$R *.dfm}
 const
   TaskTitle = 'SAMS'; // Task Title, use to apply task schedule setting
+  FileName = '..\data\core.txt';
+  FileKey = '..\data\key.txt';
 
 procedure TFSetting.btnAddModuleInfoClick(Sender: TObject);
-
 begin
-  frmModuleInfo.Show;
+  //frmModuleInfo.Show();
 end;
 
 procedure TFSetting.btnCancleClick(Sender: TObject);
@@ -143,32 +150,59 @@ begin
   Self.Close;
 end;
 
+procedure TFSetting.btnConnectClick(Sender: TObject);
+begin
+  myMail := TGmail.create;
+  sUserTemp.getSetting.getEmailSetting.addAccount(edtUsername.Text, edtPassword.Text);
+  with sUserTemp.getSetting.getEmailSetting.getAccount do
+  begin
+    with sUserTemp.getSetting.getEmailSetting.getServerList.Items[0] do
+    begin
+      myMail.setServer(Gethost);
+      myMail.setPort(Getport);
+      myMail.setTLS(Getsecure);
+      myMail.connect(Getusername, Getpassword);
+      myMail.isAuthentication;
+    end;
+  end;
+end;
+
+procedure TFSetting.btnMailApplyClick(Sender: TObject);
+begin
+  // clear edit text
+  edtServerPort.Clear;
+  edtMailServer.Clear;
+  cbbSSL.Text := 'True';
+  edtUsername.Clear;
+  edtPassword.Clear;
+end;
+
 procedure TFSetting.btnModuleDirsClick(Sender: TObject);
 var
-  SELDIRHELP :Integer;
-  Dir :string;
-  FileList:TStringList;
-  name:String;
-  i : integer;
+  SELDIRHELP: Integer;
+  Dir: string;
+  FileList: TStringList;
+  name: string;
+  i: integer;
 begin
   Dir := GetCurrentDir;
   SELDIRHELP := 1000;
-  if Vcl.FileCtrl.SelectDirectory(Dir,[sdAllowCreate, sdPerformCreate, sdPrompt],SELDIRHELP) then
+  if Vcl.FileCtrl.SelectDirectory(Dir, [sdAllowCreate, sdPerformCreate, sdPrompt], SELDIRHELP) then
   begin
     edtModuleDirs.Text := Dir;
     FileList := TStringList.Create;
     // insert file information to lvModulelist
-    FileList := myUtilitise.FindFile(Dir,edtModuleExtension.Text);
+    FileList := myUtilitise.FindFile(Dir, edtModuleExtension.Text);
     for i := 0 to FileList.Count - 1 do
+    begin
+      with lvmoduleSetting.Items.Add do
       begin
-        with lvmoduleSetting.Items.Add do
-          begin
-            name    := StrGrab(FileList.Strings[i],'','.');
-            Caption := IntToStr(i+1);
-            SubItems.Add(name);
-            SubItems.Add(myUtilitise.FileVersion(Dir+'\'+FileList.Strings[i]));
-          end;
+        name := StrGrab(FileList.Strings[i], '', '.');
+        Caption := IntToStr(i + 1);
+        SubItems.Add(name);
+        SubItems.Add(myUtilitise.FileVersion(Dir + '\' + FileList.Strings[i]));
       end;
+    end;
 
   end;
 
@@ -176,81 +210,191 @@ end;
 
 procedure TFSetting.btnOkClick(Sender: TObject);
 var
-buttonSelected :Integer;
-str:String;
+  buttonSelected: Integer;
+  str: string;
 begin
+
   case cbbtaskType.ItemIndex of
-    0 : begin // on schedule
-      case rgChoose.ItemIndex of
-        0 : begin // One Time
-          QueryTask:='/Create /SC '+rgOption+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /ST '+dtpTimePick+' /f';
-        end;
-        1 : begin // on Daily
-          QueryTask:='/Create /SC '+rgOption+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /ST '+dtpTimePick+' /f';
-        end;
-        2 : begin // on Weekly
-          QueryTask:='/Create /SC '+rgOption+' /D '+dayPick+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /ST '+dtpTimePick+' /f';
+    0:
+      begin // on schedule
+        case rgChoose.ItemIndex of
+          0:
+            begin // One Time
+              QueryTask := '/Create /SC ' + rgOption + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
+              myUser.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.oneTime, dtpDatePick, dtpTimePick, AppFullPath);
+            end;
+          1:
+            begin // on Daily
+              QueryTask := '/Create /SC ' + rgOption + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
+              myUser.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.onDaily, '', dtpTimePick, AppFullPath);
+            end;
+          2:
+            begin // on Weekly
+              QueryTask := '/Create /SC ' + rgOption + ' /D ' + dayPick + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
+              myUser.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.onWeekly, dayPick, dtpTimePick, AppFullPath);
+            end;
         end;
       end;
-    end;
-    1 : begin // on logon
-      QueryTask:='/Create /SC '+cbbtaskType.Items[cbbtaskType.ItemIndex]+' /TN "'+TaskTitle+'" /TR "'+AppFullPath+'" /f';
-    end;
-    2 : begin // on start
-      myUtilitise.SetAutoStart_REG(AppFullPath,TaskTitle,true);
-    end;
+    1:
+      begin // on logon
+        myUser.getSetting.getScheduleSetting.addTask(1, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onLogOn, TScheduleType.Undefine, '', '', AppFullPath);
+        QueryTask := '/Create /SC ' + cbbtaskType.Items[cbbtaskType.ItemIndex] + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /f';
+      end;
+    2:
+      begin // on start
+        myUser.getSetting.getScheduleSetting.addTask(2, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onStartUp, TScheduleType.Undefine, '', '', AppFullPath);
+        myUtilitise.SetAutoStart_REG(AppFullPath, TaskTitle, true);
+      end;
   end;
-  if cbbtaskType.ItemIndex <> 2 then
+  if cbbtaskType.ItemIndex >= 2 then
   begin
-    buttonSelected := messagedlg('Task Updated : '+cbbtaskType.Items[cbbtaskType.ItemIndex],mtWarning, mbOKCancel, 0);
+    buttonSelected := messagedlg('Task Updated : ' + cbbtaskType.Items[cbbtaskType.ItemIndex], mtWarning, mbOKCancel, 0);
     if buttonSelected = mrOK then
     begin
-      myUser:=TUser.Create;
-      with myUser.getSetting.getEmailSetting do
-      begin
-        addAccount('Home','Home');
-      end;
-
-      with myUser.getSetting.getScheduleSetting do
-      begin
-        addTask(1,'Pisal',TTaskType.onSchedule,TScheduleType.oneTime,dtpDatePick,dtpTimePick,AppFullPath);
-
-      end;
-      myJsoun:=TJsonUtility.create;
-      str:=myJsoun.toJson(myUser);
-      myUtilitise.CreateFile('test.txt',str);
       mySchedule.AddTask(QueryTask);
+      str := myJsoun.toJson(myUser);
+      myUtilitise.CreateFile(FileName, str);
     end;
   end;
 end;
 
 procedure TFSetting.btnRemoveClick(Sender: TObject);
 var
-  buttonSelected :Integer;
+  buttonSelected: Integer;
 begin
 
-  buttonSelected := messagedlg('Task Remove',mtWarning, mbOKCancel, 0);
-      if buttonSelected = mrOK then
+  buttonSelected := messagedlg('Task Remove', mtWarning, mbOKCancel, 0);
+  if buttonSelected = mrOK then
+  begin
+    mySchedule.RemoveTask(TaskTitle);
+    myUtilitise.RemoveEntryFromRegistry(TaskTitle);
+  end;
+end;
+
+procedure TFSetting.btnSaveClick(Sender: TObject);
+var
+  lastRow: Integer;
+  Code: string;
+  i: Integer;
+  notExit: Boolean;
+begin
+  notExit := False;
+  lastRow := lvErrorKeys.Items.Count;
+  if (edtKeyCode.Text = '') or (mmoKeyDefinition.Text = '') or (Length(edtKeyCode.Text) > 10) then
+    ShowMessage('Invalid data!!!')
+  else
+  begin
+    for i := 0 to lastRow - 1 do
+      if SameText(lvErrorKeys.Items[i].SubItems[0], edtKeyCode.Text) then
+      begin
+        ShowMessage('Duplicated Data');
+        notExit := true;
+        break;
+      end;
+  end;
+
+  if notExit = False then
+  begin
+    Code := Copy(edtKeyCode.text, 1, 10);
+    with lvErrorKeys.Items.Add do
+    begin
+      Caption := IntToStr(lastRow + 1);
+      SubItems.Add(edtkeycode.Text);
+      SubItems.Add(mmoKeyDefinition.Text);
+    end;
+
+    Insert(',[(' + edtKeyCode.Text + ')]={[_' + mmoKeyDefinition.Text + '_]}', keydata, Pos('}}', keydata) + 1);
+
+    myUtilitise.CreateFile(FileKey, keydata);
+    edtKeyCode.Text := '';
+    mmoKeyDefinition.Lines.Clear;
+  end;
+end;
+
+procedure TFSetting.btnServerSaveClick(Sender: TObject);
+var
+  ind, lastrow, buttonSelected: Integer;
+  Servername, Port: string;
+  i: Integer;
+  notExit: Boolean;
+begin
+    notExit := True;
+    lastRow := lvServerList.Items.Count;
+    if (edtMailServer.Text = '') or (edtServerPort.Text = '') then
+    begin
+      ShowMessage('Invalid data!!!');
+    end
+    else if lastrow = 0 then
+    begin
+      notExit:= True;
+    end
+    else if lastrow > 0 then
+    begin
+      ShowMessage('Items count :'+IntToStr(lastrow));
+      for i := 0 to lastrow-1 do
+      begin
+        //ShowMessage(lvServerList.Items[i].SubItems[0]+''+lvServerList.Items[i].SubItems[1]);
+        if SameText(edtMailServer.Text, lvServerList.Items[i].SubItems[0]) and SameText(edtServerPort.Text, lvServerList.Items[i].SubItems[1]) then // duplicate data
+          begin
+            ShowMessage('Server Duplicated');
+            notExit:=False;
+          end
+        {with lvServerList.Items[i] do
         begin
-          mySchedule.RemoveTask(TaskTitle);
-          myUtilitise.RemoveEntryFromRegistry(TaskTitle);
-        end;
+          ShowMessage(SubItems[0]+''+SubItems[1]);
+          if SameText(edtMailServer.Text, SubItems[0]) and SameText(edtServerPort.Text, SubItems[1]) then // duplicate data
+          begin
+            ShowMessage('Server Duplicated');
+            break;
+          end
+          else
+          begin // Not Duplicate data
+            ShowMessage('Index : '+IntToStr(i));
+            notExit := True;
+
+            //break;
+            break;
+          end;
+        end;}
+      end;
+  end;
+  if notExit = True then
+  begin
+    with sUserTemp.getSetting.getEmailSetting do
+    begin
+      addServer(edtMailServer.Text, StrToInt(edtServerPort.Text), StrToBool(cbbSSL.Text), False);
+    end;
+    with lvServerList.Items.Add do
+    begin
+      Caption := IntToStr(lvServerList.Items.Count);
+      SubItems.Add(edtMailServer.Text);
+      SubItems.Add(edtServerPort.Text);
+      SubItems.Add(cbbSSL.Text);
+      SubItems.Add('False');
+    end;
+  end;
+  // Enable Task Connect and Apply
+  edtUsername.Enabled := True;
+  edtPassword.Enabled := True;
+  btnConnect.Enabled := True;
+  btnMailApply.Enabled := True;
+        // Add To Servers to Listview;
 end;
 
 procedure TFSetting.cbbtaskTypeChange(Sender: TObject);
 var
-  itemTitle:String;
-  itemIndex:Byte;
+  itemTitle: string;
+  itemIndex: Byte;
 begin
-  itemTitle:= cbbtaskType.Items[cbbtaskType.ItemIndex];
-  itemIndex:= cbbtaskType.ItemIndex;
+  itemTitle := cbbtaskType.Items[cbbtaskType.ItemIndex];
+  itemIndex := cbbtaskType.ItemIndex;
   if itemIndex = 0 then
   begin
   {***Enable Tool Automatic Schedule block***}
-  chklstDays.Enabled:=False;
-  rgChoose.Enabled:=True;
-  dtpSStartDate.Enabled:=False;
-  dtpSTime.Enabled:=False;
+    chklstDays.Enabled := False;
+    rgChoose.Enabled := True;
+    dtpSStartDate.Enabled := False;
+    dtpSTime.Enabled := False;
   {---Enable Tool Automatic Schedule block---}
   end;
 
@@ -258,72 +402,145 @@ end;
 
 procedure TFSetting.chklstDaysClick(Sender: TObject);
 begin
-  dayPick:=myUtilitise.GetValueCheckListBox(chklstDays);
+  dayPick := myUtilitise.GetValueCheckListBox(chklstDays);
 end;
 
 procedure TFSetting.dtpSStartDateChange(Sender: TObject);
 begin
-  dtpDatePick:=DateToStr(dtpSStartDate.Date);
+  dtpDatePick := DateToStr(dtpSStartDate.Date);
 end;
 
 procedure TFSetting.dtpSTimeChange(Sender: TObject);
 begin
-  dtpTimePick:=TimeToStr(dtpSTime.time);
+  dtpTimePick := TimeToStr(dtpSTime.time);
+end;
+
+procedure TFSetting.edtkeySearchKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+var
+  i: Integer;
+begin
+  if (edtkeySearch.Text = '') or (Length(edtkeySearch.Text) > 8) then
+    mmoKeyDefinition.Lines.Clear()
+  else
+  begin
+
+    for i := 0 to lvErrorKeys.Items.Count - 1 do
+      if SameText(lvErrorKeys.Items[i].SubItems[0], edtkeySearch.Text) then
+      begin
+        lvErrorKeys.Items[i].Selected := true;
+        lvErrorKeys.Scroll(0, i * Abs(lvErrorKeys.Font.Height));
+        lvErrorKeys.SetFocus;
+        break;
+      end;
+  end;
 end;
 
 procedure TFSetting.FormCreate(Sender: TObject);
 var
   lvX: Integer;
+  j, i: Integer;
 begin
+  i := 1;
+  myUser := TUser.Create;
+  myJsoun := TJsonUtility.create;
   lvX := lvErrorKeys.Width;
+
   lvErrorKeys.Columns[0].Width := Round((lvX * 10) / 100);
   lvErrorKeys.Columns[1].Width := Round((lvX * 30) / 100);
   lvErrorKeys.Columns[2].Width := Round((lvX * 59) / 100);
   lvErrorKeys.Refresh;
+  //Transfer key data to object keydata
+  keydata := myUtilitise.ReadFile(FileKey);
+  //lvErrorKeys.Items.Add.Caption:='DDD';
+  while True do
+  begin
+    code := StrGrab(keydata, '[(', ')]', i);
+    defi := StrGrab(keydata, '{[_', '_]}', i);
+
+    if (code <> '') then
+    begin
+      with lvErrorKeys.Items.Add do
+      begin
+        Caption := IntToStr(i);
+        SubItems.Add(code);
+        SubItems.Add(defi);
+      end;
+      Inc(i);
+    end
+    else
+    begin
+      break;
+    end;
+  end;
+  //-----------------------------------
+  edtUsername.Enabled := False;
+  edtPassword.Enabled := False;
+  btnConnect.Enabled := False;
+  btnMailApply.Enabled := False;
+
+  cbbSSL.Text := 'True';
   pnlRSetting.Visible := true;
   pnlErrorSetting.Visible := False;
   pnlASchedule.Visible := False;
   pnlMailSetting.Visible := False;
   pnlModuleSetting.Visible := False;
-  sUserTemp.getSetting.getScheduleSetting.getTask.Items[0].Setid(2);
-  ShowMessage(sUserTemp.getSetting.getScheduleSetting.getTask.Items[0].GetfileURL);
-  AppPath:=ExtractFilePath(Application.ExeName);
-  AppFullPath:=Application.ExeName;
+  AppPath := ExtractFilePath(Application.ExeName);
+  AppFullPath := Application.ExeName;
+end;
+
+procedure TFSetting.lvErrorKeysDblClick(Sender: TObject);
+var
+  index: Integer;
+begin
+  index := lvErrorKeys.Selected.Index;
+  ShowMessage(lvErrorKeys.Items[index].SubItems[1]);
+end;
+
+procedure TFSetting.lvServerListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+begin
+  with lvServerList.Selected do
+  begin
+    edtMailServer.Clear;
+    edtServerPort.Clear;
+    Sleep(500);
+    edtMailServer.Text := SubItems[0];
+    edtServerPort.Text := SubItems[1];
+    cbbSSL.Text := SubItems[2];
+  end;
+
 end;
 
 procedure TFSetting.rgChooseClick(Sender: TObject);
-var index:Byte;
+var
+  index: Byte;
 begin
-      index:=rgChoose.ItemIndex;
-  if  index= 2 then // weekly option
+  index := rgChoose.ItemIndex;
+  if index = 2 then // weekly option
   begin
-      rgOption:='WEEKLY';
-      chklstDays.Enabled:=True;
-      dtpSStartDate.Enabled:=False;
-      dtpSTime.Enabled:=True;
+    rgOption := 'WEEKLY';
+    chklstDays.Enabled := True;
+    dtpSStartDate.Enabled := False;
+    dtpSTime.Enabled := True;
   end
-  else
-  if index= 1 then // Daily Option
+  else if index = 1 then // Daily Option
   begin
-      rgOption:='DAILY';
-      chklstDays.Enabled:=False;
-      dtpSStartDate.Enabled:=False;
-      dtpSTime.Enabled:=True;
+    rgOption := 'DAILY';
+    chklstDays.Enabled := False;
+    dtpSStartDate.Enabled := False;
+    dtpSTime.Enabled := True;
   end
   else if index = 0 then
   begin
-      rgOption:='ONCE';
-      chklstDays.Enabled:=False;
-      dtpSStartDate.Enabled:=True;
-      dtpSTime.Enabled:=True;
+    rgOption := 'ONCE';
+    chklstDays.Enabled := False;
+    dtpSStartDate.Enabled := True;
+    dtpSTime.Enabled := True;
   end;
 end;
 
-
-
 procedure TFSetting.tvGeneralClick(Sender: TObject);
 var
-  selectText: String;
+  selectText: string;
 begin
   if tvGeneral.Selected <> nil then
   begin
@@ -334,20 +551,20 @@ begin
       pnlMailSetting.Visible := False;
       pnlErrorSetting.Visible := true;
     end
-    else if SameText(selectText,'Module Setting') then
-      begin
-        pnlModuleSetting.Visible := True;
-        pnlErrorSetting.Visible := false;
-        pnlMailSetting.Visible := False;
-        pnlASchedule.Visible := False;
-      end
-    else if SameText(selectText,'Mail Setting') then
-      begin
-        pnlMailSetting.Visible := True;
-        pnlErrorSetting.Visible := False;
-        pnlModuleSetting.Visible := False;
-        pnlASchedule.Visible := False;
-      end
+    else if SameText(selectText, 'Module Setting') then
+    begin
+      pnlModuleSetting.Visible := True;
+      pnlErrorSetting.Visible := false;
+      pnlMailSetting.Visible := False;
+      pnlASchedule.Visible := False;
+    end
+    else if SameText(selectText, 'Mail Setting') then
+    begin
+      pnlMailSetting.Visible := True;
+      pnlErrorSetting.Visible := False;
+      pnlModuleSetting.Visible := False;
+      pnlASchedule.Visible := False;
+    end
     else
     begin
       pnlErrorSetting.Visible := False;
@@ -363,7 +580,7 @@ end;
 
 procedure TFSetting.tvTaskManagerClick(Sender: TObject);
 var
-  selectText: String;
+  selectText: string;
 begin
   if tvTaskManager.Selected <> nil then
   begin
@@ -374,22 +591,21 @@ begin
       pnlASchedule.Visible := true;
       pnlErrorSetting.Visible := False;
       pnlMailSetting.Visible := False;
-      pnlModuleSetting.Visible:=False;
+      pnlModuleSetting.Visible := False;
 
       {***Disable Tool Automatic Schedule block***}
-      chklstDays.Enabled:=False;
-      rgChoose.Enabled:=False;
-      dtpSStartDate.Enabled:=False;
-      dtpSTime.Enabled:=False;
+      chklstDays.Enabled := False;
+      rgChoose.Enabled := False;
+      dtpSStartDate.Enabled := False;
+      dtpSTime.Enabled := False;
       {---Disable Tool Automatic Schedule block---}
-
     end
     else
     begin
       pnlErrorSetting.Visible := False;
       pnlASchedule.Visible := False;
       pnlMailSetting.Visible := False;
-      pnlModuleSetting.Visible:=False;
+      pnlModuleSetting.Visible := False;
       pnlRSetting.Visible := true;
     end;
 

@@ -169,16 +169,6 @@ begin
   // addTest;
   loadModuleToMainForm;
   loadFiletoNewModuleInfo;
-
-  // Transfer file to object myUser
-  ShowMessage(myUtilitise.ReadFile('test.txt'));
-   sUserTemp := TUser.Create;
-   strs      := myUtilitise.ReadFile('test.txt');
-   sUserTemp := myJsoun.fromJson(strs);
-
- // myUser:=myJsoun.fromJson(myUtilitise.ReadFile('test.txt'));
-  //ShowMessage( myUser.getSetting.getScheduleSetting.getTask.Items[0].GetfileURL);
-
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
