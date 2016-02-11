@@ -2,9 +2,10 @@ unit MyObject;
 
 interface
 uses
-  MySetting;
+  MySetting,MyMail;
 var
   sUserTemp:TUser;
+  myMail: IMail;
 implementation
 
 end.
