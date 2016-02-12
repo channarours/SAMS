@@ -8,7 +8,7 @@ uses
   Vcl.Styles,
   FormSetting in 'FormSetting.pas' {SSetting},
   FormModuleInfo in 'FormModuleInfo.pas' {frmModuleInfo},
-  MyObject,MySetting;
+  MyObject,MySetting,MyMail,uUtilitise;
 
 {$R *.res}
 
@@ -16,7 +16,10 @@ begin
   Application.Initialize;
   // Transfer file to Object
   sUserTemp := TUser.Create;
-  sUserTemp := myJsoun.fromJson(myUtilitise.ReadFile('core.txt'));
+  myemail:=TCustom.create;;
+  myUtilitise:= TUtilitise.Create;
+  myJsoun:= TJsonUtility.create;
+  getData;
   //-----------------------------------------------------
   Application.MainFormOnTaskbar := True;
   Application.Title := 'Semi-Automatic Module Scraping Monitoring System';

@@ -109,6 +109,10 @@ type
     procedure btnConnectClick(Sender: TObject);
     procedure btnMailApplyClick(Sender: TObject);
     procedure lvServerListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);
+    procedure init;
+    procedure btnModuleSettingOkClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure lvmoduleSettingClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -117,11 +121,8 @@ type
 
 var
   SSetting: TFSetting;
-  myUtilitise: TUtilitise;
   mySchedule: TSchedule;
   myUser: TUser;
-  myJsoun: TJsonUtility;
-  myMail: IMail;
   AppPath: string;
   AppFullPath: string;
   rgOption: string;
@@ -137,13 +138,35 @@ implementation
 {$R *.dfm}
 const
   TaskTitle = 'SAMS'; // Task Title, use to apply task schedule setting
-  FileName = '..\data\core.txt';
   FileKey = '..\data\key.txt';
 
 procedure TFSetting.btnAddModuleInfoClick(Sender: TObject);
+var
+  command:string;
+  index :integer;
+  moCode:String;
 begin
-  //frmModuleInfo.Show();
+  if lvmoduleSetting.Selected <> nil then
+  begin
+    index := lvmoduleSetting.Selected.Index;
+    command := btnAddModuleInfo.Caption;
+    moCode := lvmoduleSetting.Items.Item[index].SubItems[0];
+    if SameText(command, 'Update information') then
+    begin
+      frmModuleInfo.getCommand(moCode, 'update');
+      frmModuleInfo.Show;
+    end
+    else if SameText(command, 'Add information') then
+    begin
+      frmModuleInfo.getCommand(moCode, 'add');
+      frmModuleInfo.Show;
+
+    end;
+
+  end;
 end;
+
+
 
 procedure TFSetting.btnCancleClick(Sender: TObject);
 begin
@@ -152,17 +175,16 @@ end;
 
 procedure TFSetting.btnConnectClick(Sender: TObject);
 begin
-  myMail := TGmail.create;
   sUserTemp.getSetting.getEmailSetting.addAccount(edtUsername.Text, edtPassword.Text);
   with sUserTemp.getSetting.getEmailSetting.getAccount do
   begin
     with sUserTemp.getSetting.getEmailSetting.getServerList.Items[0] do
     begin
-      myMail.setServer(Gethost);
-      myMail.setPort(Getport);
-      myMail.setTLS(Getsecure);
-      myMail.connect(Getusername, Getpassword);
-      myMail.isAuthentication;
+      myemail.setServer(Gethost);
+      myemail.setPort(Getport);
+      myemail.setTLS(Getsecure);
+      myemail.connect(Getusername, Getpassword);
+      myemail.isAuthentication;
     end;
   end;
 end;
@@ -208,6 +230,22 @@ begin
 
 end;
 
+procedure TFSetting.btnModuleSettingOkClick(Sender: TObject);
+var
+  temp:String;
+begin
+
+  with sUserTemp.getSetting.getModuleSetting do
+  begin
+    SetmoduleDir(edtModuleDirs.Text);
+    Setextension(edtModuleExtension.Text);
+    Setthread(StrToInt(cbbModuleThread.Text));
+  end;
+
+  temp := myJsoun.toJson(sUserTemp);
+  myUtilitise.CreateFile(FileCore,temp);
+end;
+
 procedure TFSetting.btnOkClick(Sender: TObject);
 var
   buttonSelected: Integer;
@@ -221,28 +259,28 @@ begin
           0:
             begin // One Time
               QueryTask := '/Create /SC ' + rgOption + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
-              myUser.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.oneTime, dtpDatePick, dtpTimePick, AppFullPath);
+              sUserTemp.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.oneTime, dtpDatePick, dtpTimePick, AppFullPath);
             end;
           1:
             begin // on Daily
               QueryTask := '/Create /SC ' + rgOption + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
-              myUser.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.onDaily, '', dtpTimePick, AppFullPath);
+              sUserTemp.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.onDaily, '', dtpTimePick, AppFullPath);
             end;
           2:
             begin // on Weekly
               QueryTask := '/Create /SC ' + rgOption + ' /D ' + dayPick + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
-              myUser.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.onWeekly, dayPick, dtpTimePick, AppFullPath);
+              sUserTemp.getSetting.getScheduleSetting.addTask(0, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.onWeekly, dayPick, dtpTimePick, AppFullPath);
             end;
         end;
       end;
     1:
       begin // on logon
-        myUser.getSetting.getScheduleSetting.addTask(1, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onLogOn, TScheduleType.Undefine, '', '', AppFullPath);
+        sUserTemp.getSetting.getScheduleSetting.addTask(1, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onLogOn, TScheduleType.Undefine, '', '', AppFullPath);
         QueryTask := '/Create /SC ' + cbbtaskType.Items[cbbtaskType.ItemIndex] + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /f';
       end;
     2:
       begin // on start
-        myUser.getSetting.getScheduleSetting.addTask(2, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onStartUp, TScheduleType.Undefine, '', '', AppFullPath);
+        sUserTemp.getSetting.getScheduleSetting.addTask(2, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onStartUp, TScheduleType.Undefine, '', '', AppFullPath);
         myUtilitise.SetAutoStart_REG(AppFullPath, TaskTitle, true);
       end;
   end;
@@ -253,7 +291,7 @@ begin
     begin
       mySchedule.AddTask(QueryTask);
       str := myJsoun.toJson(myUser);
-      myUtilitise.CreateFile(FileName, str);
+      myUtilitise.CreateFile(fileCore, str);
     end;
   end;
 end;
@@ -441,8 +479,6 @@ var
   j, i: Integer;
 begin
   i := 1;
-  myUser := TUser.Create;
-  myJsoun := TJsonUtility.create;
   lvX := lvErrorKeys.Width;
 
   lvErrorKeys.Columns[0].Width := Round((lvX * 10) / 100);
@@ -488,12 +524,90 @@ begin
   AppFullPath := Application.ExeName;
 end;
 
+procedure TFSetting.FormShow(Sender: TObject);
+begin
+init;
+end;
+
+procedure TFSetting.init;
+var
+  FileList :TStringList;
+  i,j:Integer;
+begin
+  { Module Setting }
+
+  with sUserTemp.getSetting.getModuleSetting do
+  begin
+
+    edtModuleDirs.Text := GetmoduleDir;
+    edtModuleExtension.Text := Getextension;
+    cbbModuleThread.Text    := IntToStr(Getthread);
+     FileList := TStringList.Create;
+    // insert file information to lvModulelist
+    FileList := myUtilitise.FindFile(GetmoduleDir,Getextension);
+    if FileList <> nil then
+    begin
+      lvmoduleSetting.Clear;
+      for i := 0 to FileList.Count - 1 do
+        begin
+            with lvmoduleSetting.Items.Add do
+            begin
+              name    := StrGrab(FileList.Strings[i],'','.');
+              Caption := IntToStr(i+1);
+              SubItems.Add(name);
+              SubItems.Add(myUtilitise.FileVersion(GetmoduleDir+'\'+FileList.Strings[i]));
+              SubItems.Add('N/A');
+            end;
+        end;
+
+      for i := 0 to lvmoduleSetting.Items.Count - 1 do
+        begin
+            with sUserTemp.getModuleList.getModuleInfo do
+              begin
+                for j := 0 to Count - 1 do
+                begin
+                  if SameText(lvmoduleSetting.Items.Item[i].SubItems[0],Items[j].Getcode) then
+                  begin
+                    lvmoduleSetting.Items.Item[i].SubItems[2] := '';
+                  end;
+                end;
+              end;
+
+        end;
+    end;
+  end;
+end;
+
 procedure TFSetting.lvErrorKeysDblClick(Sender: TObject);
 var
   index: Integer;
 begin
   index := lvErrorKeys.Selected.Index;
   ShowMessage(lvErrorKeys.Items[index].SubItems[1]);
+end;
+
+procedure TFSetting.lvmoduleSettingClick(Sender: TObject);
+var
+index : integer;
+begin
+  if lvmoduleSetting.Selected <> nil then
+  begin
+    index := lvmoduleSetting.Selected.Index;
+    with lvmoduleSetting.Items.Item[index] do
+    begin
+      if SameText(SubItems[2], '') then
+      begin
+        btnAddModuleInfo.Enabled := true;
+        btnAddModuleInfo.Caption := 'Update information';
+      end
+      else
+      begin
+        btnAddModuleInfo.Enabled := true;
+        btnAddModuleInfo.Caption := 'Add information';
+      end;
+
+    end;
+  end;
 end;
 
 procedure TFSetting.lvServerListSelectItem(Sender: TObject; Item: TListItem; Selected: Boolean);

@@ -63,6 +63,7 @@ type
     Help1: TMenuItem;
     AboutUS1: TMenuItem;
     btnCount: TButton;
+
     { Panel Main Form Interface code }
     procedure FormCreate(Sender: TObject);
     procedure FormResize(Sender: TObject);
@@ -71,11 +72,8 @@ type
       Item: TListItem; SubItem: Integer; State: TCustomDrawState;
       Stage: TCustomDrawStage; var DefaultDraw: Boolean);
     procedure loadModuleToMainForm();
-
     procedure btnStartClick(Sender: TObject);
-
     procedure statusClicked();
-    procedure addTest();
     procedure trycnClick(Sender: TObject);
 
     // Menu code Interface coding
@@ -87,6 +85,8 @@ type
 
     { Panel Module Infomation Interface code }
     procedure loadFiletoNewModuleInfo();
+    procedure loadModuleInfo();
+    procedure clearEdit();
     procedure saveModule(Sender: TObject);
     procedure lvModuleInfoClick(Sender: TObject);
     procedure btnDeleteClick(Sender: TObject);
@@ -94,6 +94,7 @@ type
     procedure mniModuleClick(Sender: TObject);
     procedure btnCountClick(Sender: TObject);
     procedure Setting1Click(Sender: TObject);
+    procedure btnUpdateClick(Sender: TObject);
 
     { End Module infomation Interface code }
   private
@@ -101,9 +102,10 @@ type
   public
     procedure _ExecuteAndWait(const aCommander: string);
     procedure _ExecMultiProcess(ProgramName: String; Wait: Boolean);
-
     procedure _wmReceiveData(var msg: TWMCopyData); message WM_COPYDATA;
     procedure _wmStart(var msg: TMessage); message wm_start;
+    function getModuleDir:string;
+    function getModuleExt:String;
   end;
 var
   MainForm: TMainForm;
@@ -111,34 +113,35 @@ var
   FmyUser:TUser;
 
 implementation
-
 uses
   drawprogressU;
 { Object to use with multi thread }
 
 type
-   TMyThread = class(TThread)
+  TMyThread = class(TThread)
     procedure Execute; override;
   end;
+
   TModule = class(TObject)
-    index:integer;
-    types:String;
-    name:string;
-    service:string;
-    code:string;
-    status:String;
-    keycode:String;
-    result:String;
-    version:String;
+    index: integer;
+    types: string;
+    name: string;
+    service: string;
+    code: string;
+    status: string;
+    keycode: string;
+    result: string;
+    version: string;
   end;
+
   TExModuleList = class(TObjectList)
-    protected
-    procedure setModule(I:Integer; obj:TModule);
-    function getModule(I:Integer):TModule;
-    public
-    property Module[I:Integer]:TModule read getModule write setModule;
+  protected
+    procedure setModule(I: Integer; obj: TModule);
+    function getModule(I: Integer): TModule;
+  public
+    property Module[I: Integer]: TModule read getModule write setModule;
   end;
-  { Object to use with multi thread }
+    { Object to use with multi thread }
 var
    ExModulelist:TExModuleList;
    ModuleList:TExModuleList; // ArrayList **************
@@ -149,7 +152,7 @@ begin
   Items[I] := obj;
 end;
 
-function TExModuleList.getModule(I: Integer):TModule;
+function TExModuleList.getModule(I: Integer): TModule;
 begin
   Result := TModule(Items[I]);
 end;
@@ -159,21 +162,28 @@ end;
 { Panel Main Form code implementation -------> }
 procedure TMainForm.FormCreate(Sender: TObject);
 var
-  strs :String;
+  strs: string;
 begin
   pnlModuelInfo.Visible := false;
   pnlMainForm.Visible := True;
   ExModulelist := TExModuleList.Create;
   ModuleList := TExModuleList.Create;
-
-  // addTest;
   loadModuleToMainForm;
-  loadFiletoNewModuleInfo;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
 begin
   InitComp;
+end;
+
+function TMainForm.getModuleDir: string;
+begin
+  Result := sUserTemp.getSetting.getModuleSetting.GetmoduleDir;
+end;
+
+function TMainForm.getModuleExt: String;
+begin
+  Result := sUserTemp.getSetting.getModuleSetting.Getextension;
 end;
 
 procedure TMainForm.InitComp;
@@ -209,9 +219,7 @@ begin
 
 end;
 
-procedure TMainForm.lvModuleAdvancedCustomDrawSubItem(Sender: TCustomListView;
-  Item: TListItem; SubItem: Integer; State: TCustomDrawState;
-  Stage: TCustomDrawStage; var DefaultDraw: Boolean);
+procedure TMainForm.lvModuleAdvancedCustomDrawSubItem(Sender: TCustomListView; Item: TListItem; SubItem: Integer; State: TCustomDrawState; Stage: TCustomDrawStage; var DefaultDraw: Boolean);
 const
   ProgressBarCol = 5;
   Max = 100;
@@ -227,7 +235,7 @@ begin
 
     Rct := Item.DisplayRect(drBounds);
     for I := 0 to SubItem - 1 do
-    Rct.Left := Rct.Left + Sender.Column[I].Width;
+      Rct.Left := Rct.Left + Sender.Column[I].Width;
     Rct.Right := Rct.Left + Sender.Column[SubItem].Width;
     // Sender.Canvas.TextOut(Rct.Left + 2, Rct.Top + 2, IntToStr(Percent) + '%');
 
@@ -240,17 +248,14 @@ begin
       begin
         if (Percent = 0) then
         begin
-          DrawProgress(Sender.Canvas, PBRct, Percent, Max, clLime, '',
-            lvModule.Font);
+          DrawProgress(Sender.Canvas, PBRct, Percent, Max, clLime, '', lvModule.Font);
         end
-        else if (Percent > 0) And (Percent < Max) then
+        else if (Percent > 0) and (Percent < Max) then
         begin
-          DrawProgress(Sender.Canvas, PBRct, Percent, Max, clRed, 'Processing',
-            lvModule.Font);
+          DrawProgress(Sender.Canvas, PBRct, Percent, Max, clRed, 'Processing', lvModule.Font);
         end
         else if (Percent = Max) then
-          DrawProgress(Sender.Canvas, PBRct, Percent, Max, clLime, 'completed',
-            lvModule.Font);
+          DrawProgress(Sender.Canvas, PBRct, Percent, Max, clLime, 'completed', lvModule.Font);
       end;
   end
 
@@ -258,50 +263,33 @@ end;
 
 procedure TMainForm.loadModuleToMainForm;
 var
-  dclInitFile: TIniFile;
-  dclSection: TStringList;
-  delimeter: string;
-  dclI: Integer;
-  dclParam: String;
-  dclMName, dclMType, dclMService, dclMCode, dclMParam: string;
+ i:Integer;
 begin
-  delimeter := '|';
-  lvModule.Clear;
-  if FileExists(ExtractFilePath(ParamStr(0)) + 'Logs\ModuleInfo.reg') then
+  with sUserTemp.getModuleList.getModuleInfo do
   begin
-    // dclInitFile := TIniFile.Create(ExtractFilePath(ParamStr(0) + 'Logs\ModuleInfo.reg'));
-    dclInitFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) +
-      'Logs\ModuleInfo.reg');
-    dclSection := TStringList.Create;
-    dclInitFile.ReadSections(dclSection);
-    for dclI := 0 to dclSection.Count - 1 do
+    if Count > 0 then
     begin
-      dclParam := dclInitFile.ReadString('Module' + IntToStr(dclI),
-        'ModuleInfo', '');
-      dclParam := seedDcpFromSHA256('ModuleInfo', dclParam);
-      dclMName := StrGrab(dclParam, delimeter, delimeter, 1);
-      dclMType := StrGrab(dclParam, delimeter, delimeter, 2);
-      dclMService := StrGrab(dclParam, delimeter, delimeter, 3);
-      dclMCode := StrGrab(dclParam, delimeter, delimeter, 4);
-      dclMParam := StrGrab(dclParam, delimeter, delimeter, 5);
-      // adding module information to lvModuleInfo
-      with lvModule.Items.Add do
+      lvModule.Clear;
+      for i := 0 to Count - 1 do
       begin
-        Caption := IntToStr(dclI + 1);
-        SubItems.Add(dclMName);
-        SubItems.Add(dclMType);
-        SubItems.Add(dclMService);
-        SubItems.Add(dclMCode);
-        SubItems.Add(dclMParam);
-        SubItems.Add('');
-        SubItems.Add('');
+        with lvModule.Items.Add do
+        begin
+          Caption := '';
+          SubItems.Add(Items[i].Getname);
+          SubItems.Add(Items[i].Gettypes);
+          SubItems.Add(Items[i].Getservice);
+          SubItems.Add(Items[i].Getcode);
+          SubItems.Add('');
+          SubItems.Add('');
+          SubItems.Add(myUtilitise.FileVersion(getModuleDir + '\' + Items[i].Getcode + '.' + getModuleExt));
+        end;
       end;
 
     end;
-  end
-  else
-    ShowMessage('File is not exsit...!');
-  stat1.Panels[1].Text := IntToStr(lvModule.Items.Count);
+  end;
+
+
+
 end;
 
 procedure TMainForm.statusClicked;
@@ -340,6 +328,7 @@ end;
 { End Panel Main Form code implementaion <------- }
 
 { Module Management Code block -------> }
+
 procedure TMainForm._ExecuteAndWait(const aCommander: string);
 var
   tmpStartupInfo: TStartupInfo;
@@ -354,8 +343,7 @@ begin
     wShowWindow := SW_HIDE;
   end;
   // ShowMessage('1');
-  if CreateProcess(nil, pchar(tmpProgram), nil, nil, True, CREATE_NO_WINDOW,
-    nil, nil, tmpStartupInfo, tmpProcessInformation) then
+  if CreateProcess(nil, pchar(tmpProgram), nil, nil, True, CREATE_NO_WINDOW, nil, nil, tmpStartupInfo, tmpProcessInformation) then
   begin
     // loop every 10 ms
     while WaitForSingleObject(tmpProcessInformation.hProcess, 10) > 0 do
@@ -372,20 +360,18 @@ begin
 
 end;
 
-procedure TMainForm._ExecMultiProcess(ProgramName: String; Wait: Boolean);
+procedure TMainForm._ExecMultiProcess(ProgramName: string; Wait: Boolean);
 var
   StartInfo: TStartupInfo;
   ProcInfo: TProcessInformation;
   CreateOK: Boolean;
-  ProcID : Integer;
+  ProcID: Integer;
 begin
   { fill with known state }
   FillChar(StartInfo, SizeOf(TStartupInfo), #0);
   FillChar(ProcInfo, SizeOf(TProcessInformation), #0);
   StartInfo.cb := SizeOf(TStartupInfo);
-  CreateOK := CreateProcess(nil, pchar(ProgramName), nil, nil, false,
-    CREATE_NEW_PROCESS_GROUP + NORMAL_PRIORITY_CLASS, nil, nil, StartInfo,
-    ProcInfo);
+  CreateOK := CreateProcess(nil, pchar(ProgramName), nil, nil, false, CREATE_NEW_PROCESS_GROUP + NORMAL_PRIORITY_CLASS, nil, nil, StartInfo, ProcInfo);
   { check to see if successful }
   if CreateOK then
   begin
@@ -403,88 +389,128 @@ end;
 
 procedure TMainForm._wmReceiveData(var msg: TWMCopyData);
 var
-  dclDataStr: String;
   progress: Integer;
-  dclSMName: String;
-  dclSMStatus: string;
-  dclSMThread:String;
-  dclSMProcess: String;
-  I: Integer;
-  dclI: Integer;
+  I,mIndex,lIndex: Integer;
+  senderMessage:String;
+  senderName   : String;
+  senderStatus : string;
+  senderProgress:string;
+  senderIsKilled:string;
 begin
-  dclDataStr := pchar(msg.CopyDataStruct.lpData);
-  dclSMName := Trim(StrGrab(dclDataStr, '[', ':'));
-  dclSMStatus := Trim(StrGrab(dclDataStr, ':', ']'));
-  dclSMProcess := Trim(StrGrab(dclDataStr, '(', ')'));
-  dclSMThread := Trim(StrGrab(dclDataStr,'*','*'));
-  if not SameText(dclSMProcess, '') then
-    progress := StrToInt(dclSMProcess)
-  else
-    progress := 0;
-
-  for I := 0 to lvModule.Items.Count - 1 do
+  senderMessage := pchar(msg.CopyDataStruct.lpData);
+  senderName    := Trim(StrGrab(senderMessage, '[', ':'));
+  senderStatus  := Trim(StrGrab(senderMessage, ':', ']'));
+  senderProgress:= Trim(StrGrab(senderMessage, '(', ')'));
+  senderIsKilled:= Trim(StrGrab(senderMessage, '*', '*'));
+  with sUserTemp.getModuleProcessList.getProcess do
   begin
-    with lvModule.Items.Item[I] do
-    begin
-      if SameText(dclSMName, SubItems[3]) then
+    for i := 0 to count -1  do
       begin
-        dclI := I;
-        SubItems[5] := dclSMStatus;
-        Data := Pointer(progress);
-      end;
-    end;
-    lvModule.Refresh;
-  end;
-
-  for I := 0 to ExModulelist.Count - 1 do
-    begin
-      if SameText(dclSMName,ExModulelist.getModule(i).name) then
-      begin
-        ExModulelist.getModule(i).status := dclSMThread;
-      end;
-    end;
-
-  for I := 0 to ModuleList.Count - 1 do
-    begin
-      if SameText(dclSMName,ModuleList.getModule(i).name) then
-      begin
-        ModuleList.getModule(i).status := dclSMStatus;
-      end;
-    end;
-
-  if pos(M_SDT_RESULT, dclDataStr) <> 0 then
-     begin
-     //ShowMessage(dclDataStr);
-      for I := 0 to ModuleList.Count - 1 do
+        if SameText(senderName,Items[i].GetmName) then
         begin
-          if SameText(dclSMName,ModuleList.getModule(i).name) then
+          lIndex := Items[i].GetlIndex;
+          mIndex := Items[i].GetmIndex;
+          Items[i].SetmStatus(senderIsKilled);
+
+          // set progress bar
+          if senderProgress.IsEmpty then
+             progress := 0
+          else
+             progress := StrToInt(senderProgress);
+
+          with lvModule.Items.Item[lIndex] do
           begin
-            ModuleList.getModule(i).result := dclSMStatus;
+            // update progress bar
+            Data := Pointer(progress);
+            // Update Status
+            SubItems[5] := senderStatus;
           end;
+
+          // Check Process
+        if Pos(M_SDT_RESULT, senderMessage) <> 0 then
+        begin
+          Items[i].SetmResult(senderStatus);
+        end
+        else if Pos(M_SDT_ERROR, senderMessage) <> 0 then
+        begin
+          Items[i].SetmKeycode(senderStatus);
         end;
-     end;
-  if pos(M_SDT_STATUS, dclDataStr) <> 0 then
-       //ShowMessage(dclDataStr);
-      begin
-        for I := 0 to ModuleList.Count - 1 do
-          begin
-            if SameText(dclSMName,ModuleList.getModule(i).name) then
-            begin
-              ModuleList.getModule(i).status := dclSMStatus;
-            end;
-          end;
+        end;
       end;
-  if pos(M_SDT_ERROR, dclDataStr) <> 0 then
-       //ShowMessage(dclDataStr);
-  begin
-    for I := 0 to ModuleList.Count - 1 do
-    begin
-      if SameText(dclSMName,ModuleList.getModule(i).name) then
-      begin
-        ModuleList.getModule(i).keycode := dclSMStatus;
-      end;
-    end;
   end;
+  lvModule.Refresh;
+//
+//
+//
+//  if not SameText(dclSMProcess, '') then
+//    progress := StrToInt(dclSMProcess)
+//  else
+//    progress := 0;
+//
+//  for I := 0 to lvModule.Items.Count - 1 do
+//  begin
+//    with
+//     lvModule.Items.Item[I] do
+//    begin
+//      if SameText(dclSMName, SubItems[3]) then
+//      begin
+//        dclI := I;
+//        SubItems[5] := dclSMStatus;
+//        Data := Pointer(progress);
+//      end;
+//    end;
+//    lvModule.Refresh;
+//  end;
+//
+//  for I := 0 to ExModulelist.Count - 1 do
+//  begin
+//    if SameText(dclSMName, ExModulelist.getModule(i).name) then
+//    begin
+//      ExModulelist.getModule(i).status := dclSMThread;
+//    end;
+//  end;
+//
+//  for I := 0 to ModuleList.Count - 1 do
+//  begin
+//    if SameText(dclSMName, ModuleList.getModule(i).name) then
+//    begin
+//      ModuleList.getModule(i).status := dclSMStatus;
+//    end;
+//  end;
+//
+//  if pos(M_SDT_RESULT, dclDataStr) <> 0 then
+//  begin
+//     //ShowMessage(dclDataStr);
+//    for I := 0 to ModuleList.Count - 1 do
+//    begin
+//      if SameText(dclSMName, ModuleList.getModule(i).name) then
+//      begin
+//        ModuleList.getModule(i).result := dclSMStatus;
+//      end;
+//    end;
+//  end;
+//  if pos(M_SDT_STATUS, dclDataStr) <> 0 then
+//       //ShowMessage(dclDataStr);
+//  begin
+//    for I := 0 to ModuleList.Count - 1 do
+//    begin
+//      if SameText(dclSMName, ModuleList.getModule(i).name) then
+//      begin
+//        ModuleList.getModule(i).status := dclSMStatus;
+//      end;
+//    end;
+//  end;
+//  if pos(M_SDT_ERROR, dclDataStr) <> 0 then
+//       //ShowMessage(dclDataStr);
+//  begin
+//    for I := 0 to ModuleList.Count - 1 do
+//    begin
+//      if SameText(dclSMName, ModuleList.getModule(i).name) then
+//      begin
+//        ModuleList.getModule(i).keycode := dclSMStatus;
+//      end;
+//    end;
+//  end;
 
 end;
 
@@ -499,13 +525,14 @@ end;
 { End Module Management Code block <------- }
 
 { Panel Module Infomation code implementation -------> }
+
 procedure TMainForm.loadFiletoNewModuleInfo;
 var
   dclInitFile: TIniFile;
   dclSection: TStringList;
   dclI, I: Integer;
-  dclMName, dclMType: String;
-  dclParam, delimeter: String;
+  dclMName, dclMType: string;
+  dclParam, delimeter: string;
 begin
   lvModuleInfo.Clear;
   delimeter := '|';
@@ -522,14 +549,12 @@ begin
   if FileExists(ExtractFilePath(ParamStr(0)) + 'Logs\ModuleInfo.reg') then
   begin
     // dclInitFile := TIniFile.Create(ExtractFilePath(ParamStr(0) + 'Logs\ModuleInfo.reg'));
-    dclInitFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) +
-      'Logs\ModuleInfo.reg');
+    dclInitFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) + 'Logs\ModuleInfo.reg');
     dclSection := TStringList.Create;
     dclInitFile.ReadSections(dclSection);
     for dclI := 0 to dclSection.Count - 1 do
     begin
-      dclParam := dclInitFile.ReadString('Module' + IntToStr(dclI),
-        'ModuleInfo', '');
+      dclParam := dclInitFile.ReadString('Module' + IntToStr(dclI), 'ModuleInfo', '');
       dclParam := seedDcpFromSHA256('ModuleInfo', dclParam);
       dclMName := StrGrab(dclParam, delimeter, delimeter, 1);
       dclMType := StrGrab(dclParam, delimeter, delimeter, 2);
@@ -548,93 +573,67 @@ begin
     ShowMessage('File is not exsit...!')
 end;
 
+procedure TMainForm.loadModuleInfo;
+var
+  i: Integer;
+begin
+  with sUserTemp.getModuleList.getModuleInfo do
+  begin
+    if Count > 0 then
+    begin
+      lvModuleInfo.Clear;
+      for i := 0 to Count - 1 do
+      begin
+        with lvModuleInfo.Items.Add do
+        begin
+          Caption := IntToStr(i + 1);
+          SubItems.Add(Items[i].Getname);
+          SubItems.Add(Items[i].Gettypes);
+        end;
+      end;
+    end;
+  end;
+end;
+
 procedure TMainForm.saveModule(Sender: TObject);
 var
-  dclBInfo: String;
-  dclParam: String;
-  dclSection: TStringList;
-  dclLastSection: String;
-  delimeter: String;
-  dclIniFile: TIniFile;
-  I: Integer;
+index:Integer;
 begin
-  // Check folder is exist
-  if not DirectoryExists(ExtractFilePath(ParamStr(0) + 'Logs\')) then
-  // ParamStr(0) return Current Working Directory
-    CreateDir(ExtractFilePath(ParamStr(0)) + 'Logs\');
-
-  // Encrypt all module information
-  delimeter := '|';
-  dclBInfo := delimeter + edtName.Text + delimeter + edtType.Text + delimeter +
-    edtService.Text + delimeter + edtCode.Text + delimeter + edtParam.Text +
-    delimeter;
-  dclParam := SeedEncToSHA256('ModuleInfo', dclBInfo);
-
-  // Checking ModuleInfo.reg file is exist...
-  if FileExists(ExtractFilePath(ParamStr(0)) + 'Logs\ModuleInfo.reg') then
+  if lvModuleInfo.Selected <> nil then
   begin
-    dclIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) +
-      'Logs\ModuleInfo.reg');
-    dclSection := TStringList.Create;
-    dclIniFile.ReadSections(dclSection);
-    // Saving Module Infomation
-    if SameText('Save', btnSave.Caption) then
+    index := lvModuleInfo.Selected.Index;
+    with sUserTemp.getModuleList.getModuleInfo.Items[index] do
     begin
-      dclLastSection := IntToStr(dclSection.Count);
-      dclIniFile.WriteString('Module' + dclLastSection, 'Module_Name',
-        Trim(edtName.Text));
-      dclIniFile.WriteString('Module' + dclLastSection, 'ModuleInfo', dclParam);
-      dclIniFile.UpdateFile;
-      ShowMessage('Insert Completed!');
-    end
-    else if SameText('Update', btnSave.Caption) then
-    begin
-      I := lvModuleInfo.Selected.Index;
-      dclLastSection := IntToStr(I);
-      dclIniFile.WriteString('Module' + dclLastSection, 'Module_Name',
-        Trim(edtName.Text));
-      dclIniFile.WriteString('Module' + dclLastSection, 'ModuleInfo', dclParam);
-      dclIniFile.UpdateFile;
-      ShowMessage('Update Completed!');
-      btnSave.Caption := 'Save';
+      Setid(index);
+      Setname(edtName.Text);
+      Settypes(edtType.Text);
+      Setservice(edtService.Text);
+      Setcode(edtCode.Text);
+      Setparam(edtParam.Text);
     end;
-  end
-
-  // First Inserting to ModuleInfo.reg
-  else
-  begin
-    dclIniFile := TIniFile.Create(ExtractFilePath(ParamStr(0)) +
-      'Logs\ModuleInfo.reg');
-    dclIniFile.WriteString('Module0', 'Module_Name', Trim(edtName.Text));
-    dclIniFile.WriteString('Module0', 'ModuleInfo', dclParam);
-    ShowMessage('Insert Completed!');
+    updateData;
+    ShowMessage('Update completed!');
   end;
+  clearEdit;
+  loadModuleInfo;
 
-  // Reloading data in lvModuleInfo
-  loadFiletoNewModuleInfo;
 end;
 
 procedure TMainForm.Setting1Click(Sender: TObject);
 begin
-    SSetting.Show;
+  SSetting.Show;
 end;
 
 procedure TMainForm.btnCountClick(Sender: TObject);
 var
-  mResult : String;
-  i:Integer;
+  mResult: string;
+  i: Integer;
 begin
-  for i:= 0 to ModuleList.Count - 1 do
+  for i := 0 to ModuleList.Count - 1 do
   begin
     with ModuleList.getModule(i) do
     begin
-      mResult := 'Name : ' + name + #13#10
-               + 'Type : ' + types+ #13#10
-               + 'Service : ' + service + #13#10
-               + 'status : ' + status + #13#10
-               + 'Keycode : ' + keycode + #13#10
-               + 'Version : ' + version + #13#10
-               + 'Result : ' + result ;
+      mResult := 'Name : ' + name + #13#10 + 'Type : ' + types + #13#10 + 'Service : ' + service + #13#10 + 'status : ' + status + #13#10 + 'Keycode : ' + keycode + #13#10 + 'Version : ' + version + #13#10 + 'Result : ' + result;
     end;
     ShowMessage(mResult);
   end;
@@ -643,102 +642,39 @@ end;
 
 procedure TMainForm.btnDeleteClick(Sender: TObject);
 var
-  dclBInfo, dclFilePath: String;
-  dclMName, dclParam: String;
-  dclSection: TStringList;
-  dclLastSection: String;
-  delimeter: String;
-  dclIniFile: TIniFile;
-  I: Integer;
-begin
-  dclFilePath := ExtractFilePath(ParamStr(0)) + 'Logs\ModuleInfo.reg';
-  delimeter := '|';
-  if FileExists(dclFilePath) then
-    dclIniFile := TIniFile.Create(dclFilePath);
-  dclSection := TStringList.Create;
-  dclIniFile.ReadSections(dclSection);
-  I := lvModuleInfo.Selected.Index;
-  dclLastSection := IntToStr(I);
-  if I = dclSection.Count - 1 then
-    dclIniFile.EraseSection('Module' + IntToStr(I))
-  else
-  begin
-    for I := I to dclSection.Count - 1 do
-    begin
-      if (I + 1) = (dclSection.Count) then
-      begin
-        dclIniFile.EraseSection('Module' + IntToStr(I));
-        ShowMessage('Delete Completed!');
-        loadFiletoNewModuleInfo;
-        Exit;
-      end
-      else
-      begin
-        dclMName := dclIniFile.ReadString('Module' + IntToStr(I + 1),
-          'Module_Name', '');
-        dclParam := dclIniFile.ReadString('Module' + IntToStr(I + 1),
-          'ModuleInfo', '');
-        dclLastSection := IntToStr(I);
-        dclIniFile.WriteString('Module' + dclLastSection, 'Module_Name',
-          dclMName);
-        dclIniFile.WriteString('Module' + dclLastSection, 'ModuleInfo',
-          dclParam);
-        dclIniFile.UpdateFile;
-      end;
-    end;
-  end;
-  dclIniFile.UpdateFile;
-  loadFiletoNewModuleInfo;
-  if SameText('Update', btnSave.Caption) then
-    btnSave.Caption := 'Save';
-  ShowMessage('Delete Completed!');
-end;
-
-procedure TMainForm.lvModuleInfoClick(Sender: TObject);
-var
-  dclRMName, dclRMType, dclFMName, dclFMType: string;
-  dclIniFile: TIniFile;
-  dclSection: TStringList;
-  Index: Integer;
-  dclFilePath: string;
-  dclI: Integer;
-  dclParam: String;
-  delimeter: string;
+  index: Integer;
 begin
   if lvModuleInfo.Selected <> nil then
   begin
     index := lvModuleInfo.Selected.Index;
-    with lvModuleInfo.Items do
+    with sUserTemp.getModuleList.getModuleInfo do
     begin
-      dclRMName := Item[index].SubItems.Strings[0];
-      dclRMType := Item[index].SubItems.Strings[1];
+      Remove(Items[index]);
     end;
-    dclFilePath := ExtractFilePath(ParamStr(0)) + 'Logs\ModuleInfo.reg';
-    delimeter := '|';
-    if FileExists(dclFilePath) then
-      dclIniFile := TIniFile.Create(dclFilePath);
-    dclSection := TStringList.Create;
-    dclIniFile.ReadSections(dclSection);
-    for dclI := 0 to dclSection.Count - 1 do
-    begin
-      dclFMName := dclIniFile.ReadString('Module' + IntToStr(dclI),
-        'Module_Name', '');
-      if (SameText(dclFMName, dclRMName)) then
-      begin
-        dclParam := dclIniFile.ReadString('Module' + IntToStr(dclI),
-          'ModuleInfo', '');
-        dclParam := seedDcpFromSHA256('ModuleInfo', dclParam);
-        // set text from file to edit
-        edtName.Text := StrGrab(dclParam, delimeter, delimeter, 1);
-        edtType.Text := StrGrab(dclParam, delimeter, delimeter, 2);
-        edtService.Text := StrGrab(dclParam, delimeter, delimeter, 3);
-        edtCode.Text := StrGrab(dclParam, delimeter, delimeter, 4);
-        edtParam.Text := StrGrab(dclParam, delimeter, delimeter, 5);
-      end;
-    end;
-    btnSave.Caption := 'Update';
-    btnDelete.Enabled := True;
+    updateData;
+    clearEdit;
+    loadModuleInfo;
+    ShowMessage('Delete Completed!');
   end;
+end;
+
+procedure TMainForm.lvModuleInfoClick(Sender: TObject);
+var
+  index: integer;
+begin
+  if lvModuleInfo.Selected <> nil then
+  begin
+    index := lvModuleInfo.Selected.Index;
+    with sUserTemp.getModuleList.getModuleInfo.Items[index] do
+    begin
+      edtName.Text := Getname;
+      edtType.Text := Gettypes;
+      edtService.Text := Getservice;
+      edtCode.Text := Getcode;
+      edtParam.Text := Getparam;
+    end;
+  end;
+
 end;
 
 procedure TMainForm.edtParamClick(Sender: TObject);
@@ -753,169 +689,181 @@ end;
 { End Panel Module Infomation code implementaion  <-------- }
 procedure TMainForm.btnStartClick(Sender: TObject);
 var
-  i:Integer;
+  MyThread: TMyThread;
 begin
-  SendMessage(Self.Handle, wm_start, 0, 0);
-  i := ExModulelist.Count;
+  //SendMessage(Self.Handle, wm_start, 0, 0);
+
+  MyThread := TMyThread.Create(True);
+  MyThread.FreeOnTerminate := True;
+  MyThread.Start;
+end;
+
+procedure TMainForm.btnUpdateClick(Sender: TObject);
+var
+  index:Integer;
+begin
+  if lvModule.Selected <> nil then
+  begin
+    index := lvModule.Selected.Index;
+    pnlMainForm.Visible := false;
+    pnlModuelInfo.Visible := True;
+    loadModuleInfo;
+    with sUserTemp.getModuleList.getModuleInfo.Items[index] do
+    begin
+      edtName.Text := Getname;
+      edtType.Text := Gettypes;
+      edtService.Text := Getservice;
+      edtCode.Text := Getcode;
+      edtParam.Text := Getparam;
+    end;
+
+  end;
+end;
+
+procedure TMainForm.clearEdit;
+begin
+  edtName.Clear;
+  edtType.Clear;
+  edtService.Clear;
+  edtCode.Clear;
+  edtParam.Clear;
 end;
 
 procedure TMainForm.mniModuleClick(Sender: TObject);
 begin
   pnlMainForm.Visible := false;
   pnlModuelInfo.Visible := True;
-  loadFiletoNewModuleInfo;
+  clearEdit;
+  loadModuleInfo;
 end;
 
 { Multi Processing Implementation code block }
 procedure TMyThread.Execute;
 var
-  count:Integer;
-  aParam,mExecute:string;
-  remain_module:Integer;
-  Tnum,i,j,k : Integer;
-  isCheck:Boolean;
-  indx: Array of Integer;
-  mPath,extension:String;
-  terminated:String;
-  Module:TModule;
+  count,next,i,j: Integer;
+  aParam, mExecute: string;
+  remain_module: Integer;
+
+  isCheck: Boolean;
+  mPath, extension: string;
+  terminated: string;
+  mIndex:integer;
 begin
-  mPath := '../module/';
-  extension:='.kha';
+  mPath := sUserTemp.getSetting.getModuleSetting.GetmoduleDir + '\';
+  extension :='.'+ sUserTemp.getSetting.getModuleSetting.Getextension;
   isCheck := false;
-  ModuleList.Clear;
-  Try
-     count := 0;
+  sUserTemp.getModuleProcessList.getProcess.Clear;
+  try
+    count := 0;
     // count all module that has checked to run
     for i := 0 to MainForm.lvModule.Items.Count - 1 do
+    begin
+      with MainForm.lvModule.Items[i] do
       begin
-        if MainForm.lvModule.Items[i].Checked then
+        if Checked then
         begin
-           Inc(count);
-        end;
-      end;
-
-    // Get index of module has been check
-    SetLength(indx,count);
-    j := 0;
-    for i := 0 to MainForm.lvModule.Items.Count - 1 do
-      begin
-        if MainForm.lvModule.Items[i].Checked then
-        begin
-          indx[j] := MainForm.lvModule.Items[i].Index;
-          inc(j);
-          // Add Module to ModuleList
-          Module := TModule.Create;
-          Module.index := MainForm.lvModule.Items[i].Index;
-          Module.types := MainForm.lvModule.Items[i].SubItems[0];
-          Module.name  := MainForm.lvModule.Items[i].SubItems[3];
-          Module.service := MainForm.lvModule.Items[i].SubItems[2];
-          Module.code := '';
-          Module.status := MainForm.lvModule.Items[i].SubItems[5];
-          Module.keycode := '';
-          Module.result := '';
-          Module.version := _GetKHAFileData(mPath + MainForm.lvModule.Items[i].SubItems[3] + extension).FileVersion;
-          ModuleList.Add(Module);
+          with sUserTemp.getModuleList.getModuleInfo do
+          begin
+            for j := 0 to count - 1  do
+              begin
+                if SameText(SubItems[3],Items[j].Getcode) then
+                begin
+                  with sUserTemp.getModuleProcessList do
+                  begin
+                    addProcess(i,j+1,Items[j].Getcode);
+                  end;
+                end;
+              end;
+          end;
           isCheck := true;
         end;
       end;
-
-    j := 0;
+    end;
     // Access listview items with indx's value
-    remain_module := count;
-    Tnum :=  2; // Thread Numbers process
-    if isCheck = true then
+    next := 0;
+    with sUserTemp.getModuleProcessList.getProcess do
     begin
-      repeat
-      if remain_module <= Tnum then
+      remain_module := count;
+      if isCheck = true then
       begin
-
-          for i := 0 to remain_module - 1 do
+        repeat
+          with sUserTemp.getSetting.getModuleSetting do
+          begin
+            if remain_module <= Getthread then
             begin
-              // implementation code blocks
-              aParam := MainForm.lvModule.Items.Item[indx[j]].SubItems[4];
-              aParam := seedDcpFromSHA256('mParam', aParam);
-              aParam := StringReplace(aParam, '[DTP-START]',
-                        FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime),
-                        [rfReplaceAll, rfIgnoreCase]);
-              aParam := StringReplace(aParam, '[DTP-END]',
-                        FormatDateTime('yyyymmdd',MainForm.dtpTo.DateTime),
-                        [rfReplaceAll, rfIgnoreCase]);
-
-              mExecute := mPath
-                        + MainForm.lvModule.Items.Item[indx[j]].SubItems[3]
-                        + extension;
-              if FileExists(mExecute) then
-              begin
-                MainForm.lvModule.Items.Item[indx[j]].SubItems[6] := _GetKHAFileData(mExecute).FileVersion;
-                mExecute := mExecute + ' "' + aParam + '"';
-                MainForm._ExecMultiProcess(mExecute,false);
-              end;
-              Inc(j);
-            end;
-         remain_module := 0;
-      end
-      else
-        if remain_module > Tnum then
-        begin
-          for i := 0 to Tnum - 1 do
-            begin
-              // implementation code blocks
-              aParam := MainForm.lvModule.Items.Item[indx[j]].SubItems[4];
-              aParam := seedDcpFromSHA256('mParam', aParam);
-              aParam := StringReplace(aParam, '[DTP-START]',
-                        FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime),
-                        [rfReplaceAll, rfIgnoreCase]);
-              aParam := StringReplace(aParam, '[DTP-END]',
-                        FormatDateTime('yyyymmdd',MainForm.dtpTo.DateTime),
-                        [rfReplaceAll, rfIgnoreCase]);
-
-              mExecute := mPath
-                        + MainForm.lvModule.Items.Item[indx[j]].SubItems[3]
-                        + extension;
-              if FileExists(mExecute) then
-              begin
-                MainForm.lvModule.Items.Item[indx[j]].SubItems[6] := _GetKHAFileData(mExecute).FileVersion;
-                mExecute := mExecute + ' "' + aParam + '"';
-                MainForm._ExecMultiProcess(mExecute,false);
-              end;
-
-              Module := TModule.Create;
-              Module.name := MainForm.lvModule.Items.Item[indx[j]].SubItems[3];
-              Module.status := 'Running';
-              ExModulelist.Add(Module);
-              Inc(j);
-            end;
-
-          // Check Module Terminated
-          terminated := 'False';
-          repeat
-            Sleep(300);
-            Application.ProcessMessages;
-            for k := 0 to ExModulelist.Count - 1 do
-              begin
-                if SameText(ExModulelist.getModule(k).status,'Terminated') then
+              for i  := next to remain_module - 1 do
                 begin
-                  terminated := 'True';
-                end
-                else
-                  if SameText(ExModulelist.getModule(k).status,'Running') then
+                  with sUserTemp.getModuleList.getModuleInfo do
                   begin
-                    terminated := 'False';
-                  end;
-              end;
-          until terminated = 'True' ;
-          ExModulelist.Clear;
-          remain_module := remain_module - Tnum;
-        end;
-     until remain_module = 0 ;
+                    for j := 0 to count -1 do
+                      begin
 
-  end;
- except
+
+
+                        if Items[j].Getid = sUserTemp.getModuleProcessList.getProcess.Items[i].GetmIndex then
+                        begin
+                           aParam := Items[j].Getparam;
+                           aParam := seedDcpFromSHA256('mParam', aParam);
+                           aParam := StringReplace(aParam, '[DTP-START]', FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                           aParam := StringReplace(aParam, '[DTP-END]', FormatDateTime('yyyymmdd', MainForm.dtpTo.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                           mExecute := mPath + Items[j].Getcode + extension;
+                           MainForm._ExecMultiProcess(mExecute, false);
+                        end;
+                      end;
+                  end;
+                end;
+                remain_module := 0;
+            end
+            else if remain_module > Getthread then
+                 begin
+                    for i := 0 to remain_module - 1 do
+                    begin
+                      with sUserTemp.getModuleList.getModuleInfo do
+                      begin
+                        for j := 0 to count - 1 do
+                        begin
+                          if Items[j].Getid = sUserTemp.getModuleProcessList.getProcess.Items[i].GetmIndex then
+                          begin
+                            aParam := Items[j].Getparam;
+                            aParam := seedDcpFromSHA256('mParam', aParam);
+                            aParam := StringReplace(aParam, '[DTP-START]', FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                            aParam := StringReplace(aParam, '[DTP-END]', FormatDateTime('yyyymmdd', MainForm.dtpTo.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                            mExecute := mPath + Items[j].Getcode + extension;
+                            MainForm._ExecMultiProcess(mExecute, false);
+                            sUserTemp.getModuleProcessList.getProcess.Items[i].SetmStatus('Running');
+                          end;
+                        end;
+                      end;
+                      Inc(next);
+                    end;
+                    terminated := 'False';
+                      repeat
+                        with sUserTemp.getModuleProcessList.getProcess do
+                        begin
+                          for j := 0 to Count - 1 do
+                            begin
+                              if SameText('Running',Items[i].GetmStatus) then
+                              begin
+                                terminated := 'False';
+                              end
+                              else
+                              begin
+                                terminated := 'True';
+                              end;
+                            end;
+                        end;
+                      until terminated = 'True' ;
+                    remain_module := remain_module - Getthread;
+                 end;
+          end;
+        until remain_module = 0 ;
+      end;
+    end;
+  except
     ShowMessage('Start Error...');
- end;
- if not isCheck then
-   MessageBox(0, pchar('Please choose the module that you want to run!'), '',
-      MB_OK + MB_ICONINFORMATION);
+  end;
+  if not isCheck then
+    MessageBox(0, pchar('Please choose the module that you want to run!'), '', MB_OK + MB_ICONINFORMATION);
 end;
 
 { End mulit Processing Implementation code block }
@@ -923,26 +871,6 @@ end;
 procedure TMainForm.trycnClick(Sender: TObject);
 begin
   Self.Visible := True;
-end;
-
-procedure TMainForm.addTest;
-var
-  I, Items: Integer;
-begin
-  Items := 2;
-  for I := 0 to Items - 1 do
-    with lvModule.Items.Add do
-    begin
-
-      SubItems.Add(Format('Type %d', [I]));
-      SubItems.Add(Format('Name %d', [I]));
-      SubItems.Add(Format('Service %d', [I]));
-      SubItems.Add(Format('code %d', [I]));
-      SubItems.Add('');
-      SubItems.Add(Format('status %d', [I]));
-      SubItems.Add(Format('version %d', [I]));
-      Data := Pointer(0);
-    end;
 end;
 
 end.

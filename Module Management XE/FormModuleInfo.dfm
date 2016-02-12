@@ -14,40 +14,42 @@ object frmModuleInfo: TfrmModuleInfo
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
+  Position = poMainFormCenter
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
   object lblName: TLabel
     Left = 29
     Top = 19
-    Width = 46
+    Width = 42
     Height = 16
     Caption = 'Name :'
   end
   object lblType: TLabel
     Left = 34
     Top = 49
-    Width = 41
+    Width = 37
     Height = 16
     Caption = 'Type :'
   end
   object lblService: TLabel
     Left = 16
     Top = 79
-    Width = 59
+    Width = 55
     Height = 16
     Caption = 'Service : '
   end
   object lblCode: TLabel
     Left = 33
     Top = 109
-    Width = 42
+    Width = 38
     Height = 16
     Caption = 'Code :'
   end
   object lblParam: TLabel
     Left = 25
     Top = 139
-    Width = 50
+    Width = 46
     Height = 16
     Caption = 'Param :'
   end
@@ -85,6 +87,7 @@ object frmModuleInfo: TfrmModuleInfo
     Width = 249
     Height = 24
     TabOrder = 4
+    OnClick = edtParamClick
   end
   object btnSave: TButton
     Left = 174
@@ -93,6 +96,7 @@ object frmModuleInfo: TfrmModuleInfo
     Height = 25
     Caption = 'Save'
     TabOrder = 5
+    OnClick = btnSaveClick
   end
   object btnCancel: TButton
     Left = 255

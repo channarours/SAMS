@@ -1,0 +1,29 @@
+unit MyObject;
+
+interface
+uses
+  MySetting,MyMail,uUtilitise,System.SysUtils;
+const
+  fileCore = '../data/core.txt';
+  fileLog = '../data/log/';
+var
+  sUserTemp:TUser;
+  myemail: IMail;
+  myUtilitise: TUtilitise;
+  myJsoun: TJsonUtility;
+  str:String;
+function updateData:Boolean;
+implementation
+function updateDate:Boolean;
+begin
+  try
+     myUtilitise.CreateFile(fileCore,myJsoun.toJson(sUserTemp));
+     Result := True;
+  except on E:Exception  do
+     myUtilitise.CreateFile('log-' + DateToStr(Now) + '.txt',E.Message);
+     Result := False;
+  end;
+
+end;
+
+end.

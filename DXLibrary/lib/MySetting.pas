@@ -165,6 +165,42 @@ type
       function getModuleInfo:TObjectList<TModuleInfo>;
     published
   end;
+  TModuleProcess = class
+  private
+    mIndex: integer;
+    lIndex: integer;
+    mName: string;
+    mStatus: string;
+    mKeycode: string;
+    mResult: string;
+
+  protected
+  public
+    function GetmIndex(): integer;
+    function GetlIndex(): integer;
+    function GetmName(): string;
+    function GetmStatus(): string;
+    function GetmKeycode(): string;
+    function GetmResult(): string;
+    procedure SetmIndex(const Value: integer);
+    procedure SetlIndex(const Value: integer);
+    procedure SetmName(const Value: string);
+    procedure SetmStatus(const Value: string);
+    procedure SetmKeycode(const Value: string);
+    procedure SetmResult(const Value: string);
+  published
+  end;
+  TModuleProcessList = class
+    private
+      modulelist:TObjectList<TModuleProcess>;
+    protected
+    public
+      constructor create;
+      procedure addProcess(const lIndex:Integer; mIndex: integer;
+  const name: String);
+      function  getProcess:TObjectList<TModuleProcess>;
+    published
+  end;
   TUser = class
     private
       uid:Integer;
@@ -174,6 +210,7 @@ type
       // administrator and user profile
       setting:TSetting;
       modules:TModuleList;
+      moduleProcess:TModuleProcessList;
     protected
       function Getuid():integer;
       function Getname(): String;
@@ -192,6 +229,7 @@ type
       constructor Create;
       function getSetting:TSetting;
       function getModuleList:TModuleList;
+      function getModuleProcessList:TModuleProcessList;
     published
   end;
   TJsonUtility = class
@@ -263,11 +301,17 @@ constructor TUser.Create;
 begin
   Self.setting := TSetting.create;
   Self.modules := TModuleList.create;
+  Self.moduleProcess := TModuleProcessList.create;
 end;
 
 function TUser.getModuleList: TModuleList;
 begin
 Result := modules;
+end;
+
+function TUser.getModuleProcessList: TModuleProcessList;
+begin
+  Result := Self.moduleProcess;
 end;
 
 function TUser.Getname(): String;
@@ -945,6 +989,81 @@ end;
 function TModuleList.getModuleInfo: TObjectList<TModuleInfo>;
 begin
   Result := moduleList;
+end;
+
+{ TModuleProcess }
+
+function TModuleProcess.GetmIndex(): integer;
+begin
+  Result:=Self.mIndex;
+end;
+function TModuleProcess.GetlIndex(): integer;
+begin
+  Result:=Self.lIndex;
+end;
+function TModuleProcess.GetmName(): String;
+begin
+  Result:=Self.mName;
+end;
+function TModuleProcess.GetmStatus(): String;
+begin
+  Result:=Self.mStatus;
+end;
+function TModuleProcess.GetmKeycode(): String;
+begin
+  Result:=Self.mKeycode;
+end;
+function TModuleProcess.GetmResult(): string;
+begin
+  Result:=Self.mResult;
+end;
+procedure TModuleProcess.SetmIndex(const Value: integer);
+begin
+  Self.mIndex:=Value;
+end;
+procedure TModuleProcess.SetlIndex(const Value: integer);
+begin
+  Self.lIndex:=Value;
+end;
+procedure TModuleProcess.SetmName(const Value: String);
+begin
+  Self.mName:=Value;
+end;
+procedure TModuleProcess.SetmStatus(const Value: String);
+begin
+  Self.mStatus:=Value;
+end;
+procedure TModuleProcess.SetmKeycode(const Value: String);
+begin
+  Self.mKeycode:=Value;
+end;
+procedure TModuleProcess.SetmResult(const Value: string);
+begin
+  Self.mResult:=Value;
+end;
+
+{ TModuleProcessList }
+
+procedure TModuleProcessList.addProcess(const lIndex:Integer; mIndex: integer;
+  const name: String);
+var
+  module:TModuleProcess;
+begin
+  module := TModuleProcess.Create;
+  module.SetlIndex(lIndex);
+  module.SetmIndex(mIndex);
+  module.SetmName(name);
+  modulelist.Add(module);
+end;
+
+constructor TModuleProcessList.create;
+begin
+  modulelist := TObjectList<TModuleProcess>.create;
+end;
+
+function TModuleProcessList.getProcess: TObjectList<TModuleProcess>;
+begin
+  Result := modulelist;
 end;
 
 end.
