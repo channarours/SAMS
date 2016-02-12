@@ -693,8 +693,7 @@ procedure TMainForm.btnStartClick(Sender: TObject);
 var
   MyThread: TMyThread;
 begin
-  //SendMessage(Self.Handle, wm_start, 0, 0);
-
+  SendMessage(Self.Handle, wm_start, 0, 0);
   MyThread := TMyThread.Create(True);
   MyThread.FreeOnTerminate := True;
   MyThread.Start;

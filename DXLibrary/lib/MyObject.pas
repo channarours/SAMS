@@ -2,12 +2,15 @@ unit MyObject;
 
 interface
 uses
-  MySetting,MyMail,uUtilitise,System.SysUtils;
+  MySetting,MyMail,uUtilitise,System.SysUtils,Vcl.Forms;
 
-const
+{const
   fileCore = '../data/core.txt';
-  fileLog = '../data/log/';
+  fileLog = '../data/log/';}
 var
+  fileCore:String='\data\core.txt';
+  fileLog:string='\data\';
+  FileKey:String= '\data\key.txt';
   sUserTemp:TUser;
   myemail: IMail;
   myUtilitise: TUtilitise;
@@ -15,6 +18,8 @@ var
   str:String;
 function updateData:Boolean;
 function getData:Boolean;
+
+
 implementation
 uses
   Vcl.Dialogs;
@@ -42,9 +47,14 @@ function getData:Boolean;
 var
  temp:String;
 begin
+  fileCore:=ExtractFilePath(Application.ExeName)+fileCore;
+  fileLog:=ExtractFilePath(Application.ExeName)+fileLog;
+  FileKey:=ExtractFilePath(Application.ExeName)+FileKey;
+  //ShowMessage(ExtractFilePath(Application.ExeName));
   try
     begin
-       sUserTemp := myJsoun.fromJson(myUtilitise.ReadFile(fileCore));
+      temp := myUtilitise.ReadFile(fileCore);
+       sUserTemp := myJsoun.fromJson(temp);
        Result := True;
        Exit;
     end;
