@@ -11,6 +11,9 @@ var
   fileCore:String='\data\core.txt';
   fileLog:string='\data\';
   FileKey:String= '\data\key.txt';
+  FileAbout:String='\data\about.txt';
+  FileFeatue:String='\data\feature.txt';
+  FileLogo:String='\data\logo.jpeg';
   sUserTemp:TUser;
   myemail: IMail;
   myUtilitise: TUtilitise;
@@ -50,6 +53,9 @@ begin
   fileCore:=ExtractFilePath(Application.ExeName)+fileCore;
   fileLog:=ExtractFilePath(Application.ExeName)+fileLog;
   FileKey:=ExtractFilePath(Application.ExeName)+FileKey;
+  FileAbout:=ExtractFilePath(Application.ExeName)+FileAbout;
+  FileFeatue:=ExtractFilePath(Application.ExeName)+FileFeatue;
+  FileLogo:=ExtractFilePath(Application.ExeName)+FileLogo;
   //ShowMessage(ExtractFilePath(Application.ExeName));
   try
     begin

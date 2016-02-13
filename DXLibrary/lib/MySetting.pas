@@ -172,6 +172,7 @@ type
     mName: string;
     mStatus: string;
     mKeycode: string;
+    mStep  : String;
     mResult: string;
 
   protected
@@ -181,12 +182,14 @@ type
     function GetmName(): string;
     function GetmStatus(): string;
     function GetmKeycode(): string;
+    function GetmStep(): String;
     function GetmResult(): string;
     procedure SetmIndex(const Value: integer);
     procedure SetlIndex(const Value: integer);
     procedure SetmName(const Value: string);
     procedure SetmStatus(const Value: string);
     procedure SetmKeycode(const Value: string);
+    procedure SetmStep(const Value: String);
     procedure SetmResult(const Value: string);
   published
   end;
@@ -690,10 +693,10 @@ var
 begin
   UserJson := TJSONObject.Create;
   UserJson.Parse(BytesOf(json),0);
-    User := TUser.Create;
-//  User.Setuid(StrToInt((UserJson.Get('id').JsonValue as TJSONString).Value));
-//  User.Setname((UserJson.Get('username').JsonValue as TJSONString).Value);
-//  User.Setpass((UserJson.Get('password').JsonValue as TJSONString).Value);
+  User := TUser.Create;
+  User.Setuid(StrToInt((UserJson.Get('id').JsonValue as TJSONString).Value));
+  User.Setname((UserJson.Get('username').JsonValue as TJSONString).Value);
+  User.Setpass((UserJson.Get('password').JsonValue as TJSONString).Value);
 
 
     // Check User Type { Get key value from json (obj.Get(key).JsonValue as TJsonString).value
@@ -775,6 +778,7 @@ begin
                             );
 
 
+
                   end
                   else
                     if SameText(temp1,'oneTime') then
@@ -818,6 +822,7 @@ begin
                             );
                         end;
                         getTask.Items[i].GetModuleNameList.Add((task.Get('module').JsonValue as TJSONString).Value);
+                        getTask.Items[i].SetEnable(StrToBool((task.Get('enable').JsonValue as TJSONString).Value));
               end
               else
                 // Check task type = onLogon
@@ -842,6 +847,7 @@ begin
                             (task.Get('execute').JsonValue as TJSONString).Value
                     );
                     getTask.Items[i].GetModuleNameList.Add((task.Get('module').JsonValue as TJSONString).Value);
+                    getTask.Items[i].SetEnable(StrToBool((task.Get('enable').JsonValue as TJSONString).Value));
                 end
                 else
                   // Check task type = onStartup
@@ -867,6 +873,7 @@ begin
                     );
                       //addTask(1,'',TTaskType.onStartUp,TScheduleType.Undefine);
                       getTask.Items[i].GetModuleNameList.Add((task.Get('module').JsonValue as TJSONString).Value);
+                      getTask.Items[i].SetEnable(StrToBool((task.Get('enable').JsonValue as TJSONString).Value));
                   end;
             end;
         end;
@@ -1074,6 +1081,15 @@ procedure TModuleProcess.SetmResult(const Value: string);
 begin
   Self.mResult:=Value;
 end;
+function TModuleProcess.GetmStep(): String;
+begin
+  Result:=Self.mStep;
+end;
+procedure TModuleProcess.SetmStep(const Value: String);
+begin
+  Self.mStep:=Value;
+end;
+
 
 { TModuleProcessList }
 

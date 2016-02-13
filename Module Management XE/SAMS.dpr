@@ -8,7 +8,12 @@ uses
   Vcl.Styles,
   FormSetting in 'FormSetting.pas' {SSetting},
   FormModuleInfo in 'FormModuleInfo.pas' {frmModuleInfo},
-  MyObject,MySetting,MyMail,uUtilitise;
+  MyObject,
+  MySetting,
+  MyMail,
+  uUtilitise,
+  FormTemporary in 'FormTemporary.pas' {frmTemporary},
+  FormAbout in 'FormAbout.pas' {frmAbout};
 
 {$R *.res}
 
@@ -28,6 +33,8 @@ begin
   Application.CreateForm(TParam, Param);
   Application.CreateForm(TFSetting, SSetting);
   Application.CreateForm(TfrmModuleInfo, frmModuleInfo);
+  Application.CreateForm(TfrmTemporary, frmTemporary);
+  Application.CreateForm(TfrmAbout, frmAbout);
   Application.Run;
 
 end.

@@ -117,6 +117,7 @@ type
       Selected: Boolean);
     procedure btnTSaveClick(Sender: TObject);
     procedure chkMailClick(Sender: TObject);
+    procedure btnModuleSettingCancleClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -173,13 +174,14 @@ begin
     if SameText(command, 'Update information') then
     begin
       frmModuleInfo.getCommand(moCode, 'update');
-      frmModuleInfo.Show;
+      frmModuleInfo.ShowModal;
+      init;
     end
     else if SameText(command, 'Add information') then
     begin
       frmModuleInfo.getCommand(moCode, 'add');
-      frmModuleInfo.Show;
-
+      frmModuleInfo.ShowModal;
+      init;
     end;
 
   end;
@@ -243,6 +245,7 @@ var
   name: string;
   i: integer;
 begin
+  lvmoduleSetting.Clear;
   Dir := GetCurrentDir;
   SELDIRHELP := 1000;
   if Vcl.FileCtrl.SelectDirectory(Dir, [sdAllowCreate, sdPerformCreate, sdPrompt], SELDIRHELP) then
@@ -266,6 +269,11 @@ begin
 
 end;
 
+procedure TFSetting.btnModuleSettingCancleClick(Sender: TObject);
+begin
+  Self.Close;
+end;
+
 procedure TFSetting.btnModuleSettingOkClick(Sender: TObject);
 var
   temp:String;
@@ -276,7 +284,6 @@ begin
     Setextension(edtModuleExtension.Text);
     Setthread(StrToInt(cbbModuleThread.Text));
   end;
-
   temp := myJsoun.toJson(sUserTemp);
   myUtilitise.CreateFile(FileCore,temp);
 end;
@@ -331,8 +338,8 @@ begin
         myemail.setPort(PortPrimary);
         myemail.setTLS(SSLPrimary);
         myemail.connect(USPrimary,PWDPrimary);
-        myemail.setFrom('Semi-Automatic Module System',edtadminMail.Text);
-        myemail.setReception('SAMS',edtadminMail.Text);
+        sUserTemp.UserName:=edtadminMail.Text;
+        sUserTemp.Password:=mmoMailBody.Text;
       end;
       updateData;
       mySchedule.AddTask(QueryTask);
@@ -479,6 +486,7 @@ begin
               Items[i].AddModuleName('['+lvTModuleList.Items[j].SubItems[2]+']');
             end;
           end;
+          Items[i].SetEnable(True);
     end;
     end;
   end;
@@ -552,7 +560,7 @@ end;
 
 procedure TFSetting.FormCreate(Sender: TObject);
 var
-  lvX: Integer;
+  lvX,ServerCount,j: Integer;
 
 begin
 
@@ -579,6 +587,39 @@ begin
   pnlModuleSetting.Visible := False;
   AppPath := ExtractFilePath(Application.ExeName);
   AppFullPath := Application.ExeName;
+
+  ServerCount:= sUserTemp.getSetting.getEmailSetting.getServerList.Count;
+  if ServerCount = 0 then
+  begin // do nothing
+  end else begin
+  lvServerList.Clear;
+    for j := 0 to ServerCount-1 do
+    begin
+      with lvServerList.Items.Add do
+      begin
+        with sUserTemp.getSetting.getEmailSetting.getServerList.Items[j] do
+        begin
+          Caption:=IntToStr(j+1);
+          SubItems.Add(Gethost);
+          SubItems.Add(IntToStr(Getport));
+          SubItems.Add(BoolToStr(Getsecure));
+          SubItems.Add(BoolToStr(Getprimary));
+          if Getprimary then // SetPrimary Mail For Sending Mail
+          begin
+            HostPrimary:=Gethost;
+            PortPrimary:=Getport;
+            SSLPrimary:=Getsecure;
+          end;
+        end;
+      end;
+    end;
+    with sUserTemp.getSetting.getEmailSetting.getAccount do
+    begin
+      USPrimary:=Getusername;
+      PWDPrimary:=Getpassword;
+    end;
+  end;
+
 end;
 
 procedure TFSetting.FormShow(Sender: TObject);
@@ -684,6 +725,7 @@ begin
           end;
           SubItems.Add(IntToStr(i-1));
           SubItems.Add(temp);
+          SubItems.Add(BoolToStr(GetEnable));
         end;
       end;
     end;

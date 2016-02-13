@@ -9,7 +9,7 @@ uses
   Vcl.WinXCtrls, Vcl.ComCtrls, uMethod, System.IniFiles, MySeed, FormParam,
   mTypes, GetKHAversion, IdBaseComponent, IdComponent,
   IdTCPConnection, IdTCPClient, IdExplicitTLSClientServerBase, IdMessageClient,
-  IdSMTPBase, IdSMTP,Contnrs,FormSetting,MySetting,MyMail,uUtilitise,MyObject;
+  IdSMTPBase, IdSMTP,Contnrs,FormSetting,MySetting,MyMail,uUtilitise,MyObject,FormTemporary,FormAbout;
 
 const
   wm_start = WM_USER + $1005;
@@ -62,7 +62,7 @@ type
     Setting1: TMenuItem;
     Help1: TMenuItem;
     AboutUS1: TMenuItem;
-    btnCount: TButton;
+    Extra1: TMenuItem;
 
     { Panel Main Form Interface code }
     procedure FormCreate(Sender: TObject);
@@ -75,7 +75,9 @@ type
     procedure btnStartClick(Sender: TObject);
     procedure statusClicked();
     procedure trycnClick(Sender: TObject);
+    procedure sendMail();
 
+    function ReturnProcess():String;
     // Menu code Interface coding
     procedure MainClick(Sender: TObject);
     procedure New1Click(Sender: TObject);
@@ -95,6 +97,10 @@ type
     procedure btnCountClick(Sender: TObject);
     procedure Setting1Click(Sender: TObject);
     procedure btnUpdateClick(Sender: TObject);
+    procedure Extra1Click(Sender: TObject);
+    procedure pnlRBModuleClick(Sender: TObject);
+    procedure AboutUS1Click(Sender: TObject);
+
 
     { End Module infomation Interface code }
   private
@@ -110,8 +116,8 @@ type
 var
   MainForm: TMainForm;
   TMSetting: TFSetting;
-  FmyUser:TUser;
-
+  FmyUser: TUser;
+  robotGo:Boolean;
 implementation
 uses
   drawprogressU;
@@ -162,13 +168,72 @@ end;
 { Panel Main Form code implementation -------> }
 procedure TMainForm.FormCreate(Sender: TObject);
 var
-  strs: string;
+  strs,mExit: string;
+  i,j,k,z:Integer;
+    MyThread : TMyThread;
+   temp:Boolean;
+
 begin
+  z := 0;
+  robotGo := false;
   pnlModuelInfo.Visible := false;
   pnlMainForm.Visible := True;
   ExModulelist := TExModuleList.Create;
   ModuleList := TExModuleList.Create;
   loadModuleToMainForm;
+  with sUserTemp.getSetting.getScheduleSetting.getTask do
+  begin
+    for i := 0 to Count-1 do
+    begin
+      if Items[i].GetEnable = True then // Robot Exist
+      begin
+        //robotGo:=True;
+        // Mark on Module item check
+        for k := 0 to schTaskCount do
+        begin
+          while(true) do
+          begin
+             mExit := StrGrab(Items[k].GetModuleNameList.Text, '[', ']', z + 1);
+             if mExit<>'' then
+             begin
+              for j := 0 to lvModule.Items.Count - 1 do
+              begin
+                if SameText(mExit, lvModule.Items[j].SubItems[3]) then
+                begin
+                  lvModule.Items[j].Checked := true;
+                end;
+              end;
+               Inc(z);
+               robotGo:=true;
+             end
+             else
+             begin
+              break;
+             end;
+          end;
+      end;
+    end;
+
+  //SendMessage(Self.Handle, wm_start, 0, 0);
+
+
+  end;
+  if robotGo then
+  begin
+    MyThread := TMyThread.Create(True);
+      MyThread.FreeOnTerminate := True;
+      MyThread.Start;
+//      repeat
+//        if MyThread.Terminated then
+//        begin
+//
+//          ShowMessage('1');
+//          temp:=True;
+//        end;
+//      until temp =true;
+
+  end;
+end;
 end;
 
 procedure TMainForm.FormResize(Sender: TObject);
@@ -324,6 +389,11 @@ begin
   InitComp;
   loadFiletoNewModuleInfo;
 end;
+procedure TMainForm.pnlRBModuleClick(Sender: TObject);
+begin
+
+end;
+
 // End Menu code implementation
 { End Panel Main Form code implementaion <------- }
 
@@ -357,7 +427,6 @@ begin
   begin
     RaiseLastOSError;
   end;
-
 end;
 
 procedure TMainForm._ExecMultiProcess(ProgramName: string; Wait: Boolean);
@@ -402,14 +471,13 @@ begin
   senderStatus  := Trim(StrGrab(senderMessage, ':', ']'));
   senderProgress:= Trim(StrGrab(senderMessage, '(', ')'));
   senderIsKilled:= Trim(StrGrab(senderMessage, '*', '*'));
-
-
-
-  with sUserTemp.getModuleProcessList.getProcess do
+  if sUserTemp.getModuleProcessList.getProcess.Count > 0 then
   begin
-    for i := 0 to count -1  do
+    with sUserTemp.getModuleProcessList.getProcess do
+    begin
+      for i := 0 to count - 1 do
       begin
-        if SameText(senderName,Items[i].GetmName) then
+        if SameText(senderName, Items[i].GetmName) then
         begin
           lIndex := Items[i].GetlIndex;
           mIndex := Items[i].GetmIndex;
@@ -417,9 +485,9 @@ begin
 
           // set progress bar
           if senderProgress.IsEmpty then
-             progress := 0
+            progress := 0
           else
-             progress := StrToInt(senderProgress);
+            progress := StrToInt(senderProgress);
 
           with lvModule.Items.Item[lIndex] do
           begin
@@ -430,90 +498,51 @@ begin
           end;
 
           // Check Process
-        if Pos(M_SDT_RESULT, senderMessage) <> 0 then
-        begin
-          Items[i].SetmResult(senderStatus);
-        end
-        else if Pos(M_SDT_ERROR, senderMessage) <> 0 then
-        begin
-          Items[i].SetmKeycode(senderStatus);
-        end;
+          if Pos(M_SDT_RESULT, senderMessage) <> 0 then
+          begin
+            Items[i].SetmResult(senderStatus);
+          end
+          else if Pos(M_SDT_STATUS, senderMessage) <> 0 then
+          begin
+            Items[i].SetmStep(senderMessage);
+          end
+          else if Pos(M_SDT_ERROR, senderMessage) <> 0 then
+          begin
+            Items[i].SetmKeycode(senderStatus);
+          end;
         end;
       end;
+    end;
+    lvModule.Refresh;
   end;
-//
-//
-//
-//  if not SameText(dclSMProcess, '') then
-//    progress := StrToInt(dclSMProcess)
-//  else
-//    progress := 0;
-//
-//  for I := 0 to lvModule.Items.Count - 1 do
-//  begin
-//    with
-//     lvModule.Items.Item[I] do
-//    begin
-//      if SameText(dclSMName, SubItems[3]) then
-//      begin
-//        dclI := I;
-//        SubItems[5] := dclSMStatus;
-//        Data := Pointer(progress);
-//      end;
-//    end;
-//    lvModule.Refresh;
-//  end;
-//
-//  for I := 0 to ExModulelist.Count - 1 do
-//  begin
-//    if SameText(dclSMName, ExModulelist.getModule(i).name) then
-//    begin
-//      ExModulelist.getModule(i).status := dclSMThread;
-//    end;
-//  end;
-//
-//  for I := 0 to ModuleList.Count - 1 do
-//  begin
-//    if SameText(dclSMName, ModuleList.getModule(i).name) then
-//    begin
-//      ModuleList.getModule(i).status := dclSMStatus;
-//    end;
-//  end;
-//
-//  if pos(M_SDT_RESULT, dclDataStr) <> 0 then
-//  begin
-//     //ShowMessage(dclDataStr);
-//    for I := 0 to ModuleList.Count - 1 do
-//    begin
-//      if SameText(dclSMName, ModuleList.getModule(i).name) then
-//      begin
-//        ModuleList.getModule(i).result := dclSMStatus;
-//      end;
-//    end;
-//  end;
-//  if pos(M_SDT_STATUS, dclDataStr) <> 0 then
-//       //ShowMessage(dclDataStr);
-//  begin
-//    for I := 0 to ModuleList.Count - 1 do
-//    begin
-//      if SameText(dclSMName, ModuleList.getModule(i).name) then
-//      begin
-//        ModuleList.getModule(i).status := dclSMStatus;
-//      end;
-//    end;
-//  end;
-//  if pos(M_SDT_ERROR, dclDataStr) <> 0 then
-//       //ShowMessage(dclDataStr);
-//  begin
-//    for I := 0 to ModuleList.Count - 1 do
-//    begin
-//      if SameText(dclSMName, ModuleList.getModule(i).name) then
-//      begin
-//        ModuleList.getModule(i).keycode := dclSMStatus;
-//      end;
-//    end;
-//  end;
 
+  // Temporaray Module
+  if frmTemporary.modules.getModuleList.Count > 0 then
+  begin
+    with frmTemporary.modules.getModuleList do
+    begin
+      for i := 0 to Count - 1 do
+        begin
+          if SameText(senderName, Items[i].mName) then
+          begin
+            if Pos(M_SDT_RESULT, senderMessage) <> 0 then
+            begin
+              Items[i].mResult := senderMessage;
+            end
+            else if Pos(M_SDT_STATUS, senderMessage) <> 0 then
+            begin
+              Items[i].mStep := senderStatus;
+              frmTemporary.lvTMList.Items.Item[i].SubItems[1] := senderStatus;
+            end
+            else if Pos(M_SDT_ERROR, senderMessage) <> 0 then
+            begin
+              Items[i].mKeycode := senderMessage;
+            end;
+          end;
+        end;
+        frmTemporary.lvTMList.Refresh;
+    end;
+  end;
 end;
 
 procedure TMainForm._wmStart(var msg: TMessage);
@@ -620,10 +649,53 @@ begin
   loadModuleInfo;
 
 end;
+function TMainForm.ReturnProcess():String;
+var I:Integer; t:String;
+begin
+  with sUserTemp.getModuleProcessList.getProcess do
+  begin
+    for I := 0 to Count - 1 do
+    begin
+      t := t + 'Module Name: ' + Items[i].GetmName  + #13#10
+        + 'Result : ' + Items[i].GetmResult  + #13#10
+        + 'Step   : ' + Items[i].GetmStep    + #13#10;
+    end;
+  end;
+   result :=t;
+end;
+
+procedure TMainForm.sendMail;
+var t:string;
+i:Integer;
+begin
+  Sleep(10000);
+  myemail.setServer(HostPrimary);
+  myemail.setPort(PortPrimary);
+  myemail.setTLS(SSLPrimary);
+  myemail.connect(USPrimary, PWDPrimary);
+  myemail.isAuthentication;
+  myemail.setFrom('Semi-Automatic Module System', USPrimary); //edtadminMail.Text);
+  myemail.setReception('SAMS', sUserTemp.UserName);
+  myemail.send('Semi-Automatic Module System', sUserTemp.UserName,AppPath+'\Logs\TTT.txt'); //mmoMailBody.Text);
+//  t:='HostPrimary :'+HostPrimary+'/'
+//  +'PortPrimary :'+IntToStr(PortPrimary)+'/'
+//  +'SSLPrimary :'+BoolToStr(SSLPrimary)+'/'
+//  +'USPrimary :'+USPrimary+'/'
+//  +'PWDPrimary :'+PWDPrimary+'/'
+//  +'Send To :'+sUserTemp.UserName+'/'
+//  +'Body :'+sUserTemp.Password;
+
+end;
 
 procedure TMainForm.Setting1Click(Sender: TObject);
 begin
-  SSetting.Show;
+  SSetting.ShowModal;
+end;
+
+
+procedure TMainForm.AboutUS1Click(Sender: TObject);
+begin
+  frmAbout.Show;
 end;
 
 procedure TMainForm.btnCountClick(Sender: TObject);
@@ -688,15 +760,24 @@ begin
   FreeAndNil(clsParam);
 end;
 
+procedure TMainForm.Extra1Click(Sender: TObject);
+begin
+ frmTemporary.showModal;
+end;
+
 { End Panel Module Infomation code implementaion  <-------- }
 procedure TMainForm.btnStartClick(Sender: TObject);
 var
   MyThread: TMyThread;
 begin
-  SendMessage(Self.Handle, wm_start, 0, 0);
+  //SendMessage(Self.Handle, wm_start, 0, 0);
   MyThread := TMyThread.Create(True);
   MyThread.FreeOnTerminate := True;
   MyThread.Start;
+  {if MyThread.Terminated then
+  begin
+
+  end;}
 end;
 
 procedure TMainForm.btnUpdateClick(Sender: TObject);
@@ -719,6 +800,8 @@ begin
     end;
 
   end;
+
+
 end;
 
 procedure TMainForm.clearEdit;
@@ -741,14 +824,17 @@ end;
 { Multi Processing Implementation code block }
 procedure TMyThread.Execute;
 var
-  count,next,i,j: Integer;
+  count,next,loop,i,j: Integer;
   aParam, mExecute: string;
   remain_module: Integer;
-
+  thread:Byte;
+  remainder:Byte;
+  complete: Byte;
   isCheck: Boolean;
   mPath, extension: string;
-  terminated: string;
+  terminated: boolean;
   mIndex:integer;
+  t:String;
 begin
   mPath := sUserTemp.getSetting.getModuleSetting.GetmoduleDir + '\';
   extension :='.'+ sUserTemp.getSetting.getModuleSetting.Getextension;
@@ -780,91 +866,146 @@ begin
         end;
       end;
     end;
-    // Access listview items with indx's value
-    next := 0;
-    with sUserTemp.getModuleProcessList.getProcess do
+    // Total module to be run
+    count := sUserTemp.getModuleProcessList.getProcess.Count;
+    thread:= sUserTemp.getSetting.getModuleSetting.Getthread;
+    loop  := count div thread;
+    remainder := count mod thread;
+    next  := 0;
+    complete := 0;
+    // run follow by thread set
+    if isCheck then
     begin
-      remain_module := count;
-      if isCheck = true then
+      if loop > 0 then
       begin
-        repeat
-          with sUserTemp.getSetting.getModuleSetting do
+        for i := 0 to ((count - remainder) - 1) do
+        begin
+        with sUserTemp.getModuleProcessList.getProcess do
+        begin
+          // compare module process list with module info list to get param value
+          for j := 0 to sUserTemp.getModuleList.getModuleInfo.Count - 1 do
           begin
-            if remain_module <= Getthread then
+            if (Items[i].GetmIndex = sUserTemp.getModuleList.getModuleInfo.Items[j].Getid) then
             begin
-              for i  := next to remain_module - 1 do
+              with sUserTemp.getModuleList.getModuleInfo.Items[j] do
+              begin
+                // implement code to execute module
+                aParam := Getparam;
+                aParam := seedDcpFromSHA256('mParam', aParam);
+                aParam := StringReplace(aParam, '[DTP-START]', FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                aParam := StringReplace(aParam, '[DTP-END]', FormatDateTime('yyyymmdd', MainForm.dtpTo.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                mExecute := mPath + Getcode + extension;
+                mExecute := mExecute + ' "' + aParam + '"';
+                MainForm._ExecMultiProcess(mExecute, false);
+                sUserTemp.getModuleProcessList.getProcess.Items[i].SetmStatus('Running');
+              end;
+            end;
+          end;
+        end;
+        // Wait thread to run complete
+        Inc(complete);
+        if complete = (thread) then
+        begin
+          repeat
+            with sUserTemp.getModuleProcessList.getProcess do
+            begin
+              for j := 0 to Count - 1 do
+              begin
+                if SameText('Running', Items[j].GetmStatus) then
                 begin
-                  with sUserTemp.getModuleList.getModuleInfo do
+                  terminated := False;
+                end
+                else if SameText('Terminated', Items[j].GetmStatus) then
+                begin
+                  terminated := true;
+                end;
+              end;
+            end;
+          until terminated = True;
+            // Reset Value
+            with sUserTemp.getModuleProcessList.getProcess do
+            begin
+              for j := 0 to count - 1 do
+              begin
+                Items[j].SetmStatus('');
+              end;
+            end;
+          complete := 0;
+        end;
+        Inc(next);
+      end;
+
+      if (remainder > 0) then
+      begin
+          for i := next  to (remainder + next) - 1 do
+          begin
+            with sUserTemp.getModuleProcessList.getProcess do
+            begin
+              // compare module process list with module info list to get param value
+              for j := 0 to sUserTemp.getModuleList.getModuleInfo.Count - 1 do
+              begin
+                if (Items[i].GetmIndex = sUserTemp.getModuleList.getModuleInfo.Items[j].Getid) then
+                begin
+                  with sUserTemp.getModuleList.getModuleInfo.Items[j] do
                   begin
-                    for j := 0 to count -1 do
-                      begin
-
-
-
-                        if Items[j].Getid = sUserTemp.getModuleProcessList.getProcess.Items[i].GetmIndex then
-                        begin
-                           aParam := Items[j].Getparam;
-                           aParam := seedDcpFromSHA256('mParam', aParam);
-                           aParam := StringReplace(aParam, '[DTP-START]', FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime), [rfReplaceAll, rfIgnoreCase]);
-                           aParam := StringReplace(aParam, '[DTP-END]', FormatDateTime('yyyymmdd', MainForm.dtpTo.DateTime), [rfReplaceAll, rfIgnoreCase]);
-                           mExecute := mPath + Items[j].Getcode + extension;
-                           MainForm._ExecMultiProcess(mExecute, false);
-                        end;
-                      end;
+                    // implement code to execute module
+                    aParam := Getparam;
+                    aParam := seedDcpFromSHA256('mParam', aParam);
+                    aParam := StringReplace(aParam, '[DTP-START]', FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                    aParam := StringReplace(aParam, '[DTP-END]', FormatDateTime('yyyymmdd', MainForm.dtpTo.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                    mExecute := mPath + Getcode + extension;
+                    mExecute := mExecute + ' "' + aParam + '"';
+                    MainForm._ExecMultiProcess(mExecute, false);
                   end;
                 end;
-                remain_module := 0;
-            end
-            else if remain_module > Getthread then
-                 begin
-                    for i := 0 to remain_module - 1 do
-                    begin
-                      with sUserTemp.getModuleList.getModuleInfo do
-                      begin
-                        for j := 0 to count - 1 do
-                        begin
-                          if Items[j].Getid = sUserTemp.getModuleProcessList.getProcess.Items[i].GetmIndex then
-                          begin
-                            aParam := Items[j].Getparam;
-                            aParam := seedDcpFromSHA256('mParam', aParam);
-                            aParam := StringReplace(aParam, '[DTP-START]', FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime), [rfReplaceAll, rfIgnoreCase]);
-                            aParam := StringReplace(aParam, '[DTP-END]', FormatDateTime('yyyymmdd', MainForm.dtpTo.DateTime), [rfReplaceAll, rfIgnoreCase]);
-                            mExecute := mPath + Items[j].Getcode + extension;
-                            MainForm._ExecMultiProcess(mExecute, false);
-                            sUserTemp.getModuleProcessList.getProcess.Items[i].SetmStatus('Running');
-                          end;
-                        end;
-                      end;
-                      Inc(next);
-                    end;
-                    terminated := 'False';
-                      repeat
-                        with sUserTemp.getModuleProcessList.getProcess do
-                        begin
-                          for j := 0 to Count - 1 do
-                            begin
-                              if SameText('Running',Items[i].GetmStatus) then
-                              begin
-                                terminated := 'False';
-                              end
-                              else
-                              begin
-                                terminated := 'True';
-                              end;
-                            end;
-                        end;
-                      until terminated = 'True' ;
-                    remain_module := remain_module - Getthread;
-                 end;
+              end;
+            end;
           end;
-        until remain_module = 0 ;
+        end;
+      end
+      else
+      begin
+        with sUserTemp.getModuleProcessList.getProcess do
+        begin
+          for i := 0 to Count - 1 do
+          begin
+              // compare module process list with module info list to get param value
+            for j := 0 to sUserTemp.getModuleList.getModuleInfo.Count - 1 do
+            begin
+              if (Items[i].GetmIndex = sUserTemp.getModuleList.getModuleInfo.Items[j].Getid) then
+              begin
+                with sUserTemp.getModuleList.getModuleInfo.Items[j] do
+                begin
+                    // implement code to execute module
+                  aParam := Getparam;
+                  aParam := seedDcpFromSHA256('mParam', aParam);
+                  aParam := StringReplace(aParam, '[DTP-START]', FormatDateTime('yyyymmdd', MainForm.dtpFrom.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                  aParam := StringReplace(aParam, '[DTP-END]', FormatDateTime('yyyymmdd', MainForm.dtpTo.DateTime), [rfReplaceAll, rfIgnoreCase]);
+                  mExecute := mPath + Getcode + extension;
+                  mExecute := mExecute + ' "' + aParam + '"';
+                  MainForm._ExecMultiProcess(mExecute, false);
+                end;
+              end;
+            end;
+          end;
+        end;
       end;
     end;
+
   except
     ShowMessage('Start Error...');
   end;
   if not isCheck then
+  begin
     MessageBox(0, pchar('Please choose the module that you want to run!'), '', MB_OK + MB_ICONINFORMATION);
+  end;
+  // send mail block
+  if robotGo then
+  begin
+    //MainForm.sendMail;
+    uSaveFile('TTT.txt',MainForm.ReturnProcess);
+    MainForm.sendMail;
+  end;
 end;
 
 { End mulit Processing Implementation code block }
