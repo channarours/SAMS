@@ -656,7 +656,7 @@ object FSetting: TFSetting
         Left = 1
         Top = 1
         Width = 580
-        Height = 232
+        Height = 202
         Align = alTop
         TabOrder = 0
         object grpAStop: TGroupBox
@@ -664,7 +664,7 @@ object FSetting: TFSetting
           Left = 26
           Top = 11
           Width = 528
-          Height = 212
+          Height = 182
           Margins.Left = 25
           Margins.Top = 10
           Margins.Right = 25
@@ -714,18 +714,6 @@ object FSetting: TFSetting
             TabOrder = 1
             OnChange = dtpSStartDateChange
           end
-          object dtpSTime: TDateTimePicker
-            Left = 419
-            Top = 21
-            Width = 96
-            Height = 24
-            Date = 42400.000000000000000000
-            Format = 'HH:mm:ss'
-            Time = 42400.000000000000000000
-            DateMode = dmUpDown
-            TabOrder = 2
-            OnChange = dtpSTimeChange
-          end
           object rgChoose: TRadioGroup
             Left = 18
             Top = 51
@@ -741,7 +729,7 @@ object FSetting: TFSetting
               'Daily'
               'Weekly')
             ParentFont = False
-            TabOrder = 3
+            TabOrder = 2
             OnClick = rgChooseClick
           end
           object chklstDays: TCheckListBox
@@ -757,7 +745,7 @@ object FSetting: TFSetting
               'Friday'
               'Saturday'
               'Sunday')
-            TabOrder = 4
+            TabOrder = 3
             OnClick = chklstDaysClick
           end
           object edtadminMail: TEdit
@@ -765,41 +753,32 @@ object FSetting: TFSetting
             Top = 51
             Width = 148
             Height = 24
-            TabOrder = 5
-          end
-          object btnRemove: TButton
-            Left = 161
-            Top = 181
-            Width = 95
-            Height = 25
-            Caption = 'Remove'
-            TabOrder = 6
-            OnClick = btnRemoveClick
+            TabOrder = 4
           end
           object btnOk: TButton
             Left = 305
-            Top = 179
+            Top = 153
             Width = 96
             Height = 25
             Caption = 'OK'
-            TabOrder = 7
+            TabOrder = 5
             OnClick = btnOkClick
           end
           object btnCancle: TButton
             Left = 430
-            Top = 181
+            Top = 153
             Width = 85
             Height = 25
             Caption = 'Cancel'
-            TabOrder = 8
+            TabOrder = 6
             OnClick = btnCancleClick
           end
           object mmoMailBody: TMemo
             Left = 305
             Top = 81
             Width = 210
-            Height = 96
-            TabOrder = 9
+            Height = 67
+            TabOrder = 7
           end
           object chkMail: TCheckBox
             Left = 269
@@ -807,15 +786,26 @@ object FSetting: TFSetting
             Width = 97
             Height = 17
             Caption = 'Send Mail To : '
-            TabOrder = 10
+            TabOrder = 8
+            OnClick = chkMailClick
+          end
+          object dtpSTime: TDateTimePicker
+            Left = 423
+            Top = 21
+            Width = 90
+            Height = 24
+            Date = 42412.879287337960000000
+            Time = 42412.879287337960000000
+            Kind = dtkTime
+            TabOrder = 9
           end
         end
       end
       object pnlASButtom: TPanel
         Left = 1
-        Top = 227
+        Top = 209
         Width = 580
-        Height = 232
+        Height = 250
         Align = alBottom
         TabOrder = 1
         object TaskList: TLabel
@@ -827,7 +817,7 @@ object FSetting: TFSetting
         end
         object ModuleList: TLabel
           Left = 16
-          Top = 103
+          Top = 124
           Width = 53
           Height = 13
           Caption = 'Module List'
@@ -854,7 +844,10 @@ object FSetting: TFSetting
               Caption = 'Time'
             end
             item
-              Caption = 'Modules'
+              Caption = 'Number of module'
+            end
+            item
+              Caption = 'Module Items'
             end
             item
               Caption = 'Enable'
@@ -866,7 +859,7 @@ object FSetting: TFSetting
         end
         object lvTModuleList: TListView
           Left = 16
-          Top = 122
+          Top = 143
           Width = 537
           Height = 71
           Checkboxes = True
@@ -892,12 +885,21 @@ object FSetting: TFSetting
         end
         object btnTSave: TButton
           Left = 480
-          Top = 199
+          Top = 220
           Width = 75
           Height = 25
           Caption = 'Save'
           TabOrder = 2
           OnClick = btnTSaveClick
+        end
+        object btnRemove: TButton
+          Left = 480
+          Top = 103
+          Width = 73
+          Height = 25
+          Caption = 'Remove'
+          TabOrder = 3
+          OnClick = btnRemoveClick
         end
       end
     end

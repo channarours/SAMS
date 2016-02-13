@@ -23,11 +23,9 @@ type
     cbbtaskType: TComboBox;
     lblStart: TLabel;
     dtpSStartDate: TDateTimePicker;
-    dtpSTime: TDateTimePicker;
     rgChoose: TRadioGroup;
     chklstDays: TCheckListBox;
     edtadminMail: TEdit;
-    btnRemove: TButton;
     btnOk: TButton;
     btnCancle: TButton;
     mmoMailBody: TMemo;
@@ -89,6 +87,8 @@ type
     edtkeySearch: TEdit;
     lvServerList: TListView;
     T1: TLabel;
+    dtpSTime: TDateTimePicker;
+    btnRemove: TButton;
     procedure FormCreate(Sender: TObject);
     procedure tvTaskManagerClick(Sender: TObject);
     procedure tvGeneralClick(Sender: TObject);
@@ -116,6 +116,7 @@ type
     procedure lvTaskListSelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
     procedure btnTSaveClick(Sender: TObject);
+    procedure chkMailClick(Sender: TObject);
   private
     { Private declarations }
   public
@@ -142,11 +143,21 @@ var
   TISID:Integer;
   // TaskModuleItemsChecked
   TMICheckCount:Integer;
+  // Server Primary
+  HostPrimary:String;
+  PortPrimary:Integer;
+  SSLPrimary:Boolean;
+  USPrimary:String;
+  PWDPrimary:String;
+
+  // ModuleItemsInTask
+  ModuleNum:Integer;
+  schTaskCount:Integer;
 implementation
 
 {$R *.dfm}
-const
-  TaskTitle = 'SAMS'; // Task Title, use to apply task schedule setting
+{const
+  TaskTitle = 'SAMS'; // Task Title, use to apply task schedule setting}
 
 procedure TFSetting.btnAddModuleInfoClick(Sender: TObject);
 var
@@ -275,39 +286,37 @@ var
   buttonSelected: Integer;
   str: string;
 begin
-
+  dtpTimePick:=myUtilitise.ConvertTime12To24(TimeToStr(dtpSTime.Time));
   case cbbtaskType.ItemIndex of
     0:
       begin // on schedule
         case rgChoose.ItemIndex of
           0:
             begin // One Time
-              QueryTask := '/Create /SC ' + rgOption + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
-              sUserTemp.getSetting.getScheduleSetting.addTask(10, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.oneTime, dtpDatePick, dtpTimePick, AppFullPath);
-
+              QueryTask := '/Create /SC ' + rgOption + ' /TN "SAMSONCE" /TR "' + AppFullPath + '" /SD '+dtpDatePick+' /ST ' + dtpTimePick + ' /f';
+              sUserTemp.getSetting.getScheduleSetting.addTask(10, 'SAMSONCE', TTaskType.onSchedule, TScheduleType.oneTime, dtpDatePick, dtpTimePick, AppFullPath);
             end;
           1:
             begin // on Daily
-              QueryTask := '/Create /SC ' + rgOption + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
-              sUserTemp.getSetting.getScheduleSetting.addTask(11, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.onDaily, '', dtpTimePick, AppFullPath);
+              QueryTask := '/Create /SC ' + rgOption + ' /TN "SAMSDAILY" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
+              sUserTemp.getSetting.getScheduleSetting.addTask(11, 'SAMSDAILY', TTaskType.onSchedule, TScheduleType.onDaily, '', dtpTimePick, AppFullPath);
             end;
           2:
             begin // on Weekly
-              QueryTask := '/Create /SC ' + rgOption + ' /D ' + dayPick + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
-              sUserTemp.getSetting.getScheduleSetting.addTask(12, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onSchedule, TScheduleType.onWeekly, dayPick, dtpTimePick, AppFullPath);
+              QueryTask := '/Create /SC ' + rgOption + ' /D ' + dayPick + ' /TN "SAMSWEEKLY" /TR "' + AppFullPath + '" /ST ' + dtpTimePick + ' /f';
+              sUserTemp.getSetting.getScheduleSetting.addTask(12, 'SAMSWEEKLY', TTaskType.onSchedule, TScheduleType.onWeekly, dayPick, dtpTimePick, AppFullPath);
             end;
         end;
-        ShowMessage(IntToStr(rgChoose.ItemIndex));
       end;
     1:
       begin // on logon
-        QueryTask := '/Create /SC ' + cbbtaskType.Items[cbbtaskType.ItemIndex] + ' /TN "' + TaskTitle + '" /TR "' + AppFullPath + '" /f';
-        sUserTemp.getSetting.getScheduleSetting.addTask(1, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onLogOn, TScheduleType.Undefine, '', '', AppFullPath);
+        QueryTask := '/Create /SC ONLOGON /TN "SAMSLOGON" /TR "' + AppFullPath + '" /f';
+        sUserTemp.getSetting.getScheduleSetting.addTask(1, 'SAMSLOGON', TTaskType.onLogOn, TScheduleType.Undefine, '', '', AppFullPath);
       end;
     2:
       begin // on start
-        myUtilitise.SetAutoStart_REG(AppFullPath, TaskTitle, true);
-        sUserTemp.getSetting.getScheduleSetting.addTask(2, cbbtaskType.Items[cbbtaskType.ItemIndex], TTaskType.onStartUp, TScheduleType.Undefine, '', '', AppFullPath);
+        myUtilitise.SetAutoStart_REG(AppFullPath, 'SAMSSTART', true);
+        sUserTemp.getSetting.getScheduleSetting.addTask(2, 'SAMSSTART', TTaskType.onStartUp, TScheduleType.Undefine, '', '', AppFullPath);
       end;
   end;
   if cbbtaskType.ItemIndex >=0  then
@@ -315,8 +324,17 @@ begin
     buttonSelected := messagedlg('Task Updated : ' + cbbtaskType.Items[cbbtaskType.ItemIndex], mtWarning, mbOKCancel, 0);
     if buttonSelected = mrOK then
     begin
+      if (edtadminMail.Text<>'') and (chkMail.Checked) then
+      begin
+        myUtilitise.DialogBoxAutoClose('Mail To','Information Will sent to '+edtadminMail.Text,3,False);
+        myemail.setServer(HostPrimary);
+        myemail.setPort(PortPrimary);
+        myemail.setTLS(SSLPrimary);
+        myemail.connect(USPrimary,PWDPrimary);
+        myemail.setFrom('Semi-Automatic Module System',edtadminMail.Text);
+        myemail.setReception('SAMS',edtadminMail.Text);
+      end;
       updateData;
-      ShowMessage('Data Updated');
       mySchedule.AddTask(QueryTask);
     end;
   end;
@@ -330,8 +348,14 @@ begin
   buttonSelected := messagedlg('Task Remove', mtWarning, mbOKCancel, 0);
   if buttonSelected = mrOK then
   begin
-    mySchedule.RemoveTask(TaskTitle);
-    myUtilitise.RemoveEntryFromRegistry(TaskTitle);
+    mySchedule.RemoveTask(lvTaskList.Items[TISID].SubItems[0]);
+    myUtilitise.RemoveEntryFromRegistry(lvTaskList.Items[TISID].SubItems[0]);
+    lvTaskList.DeleteSelected;
+    with   sUserTemp.getSetting.getScheduleSetting.getTask do
+    begin
+      Remove(Items[TISID]);
+    end;
+    updateData;
   end;
 end;
 
@@ -452,7 +476,7 @@ begin
             if lvTModuleList.Items[j].Checked = True then
             begin
               Inc(TMICheckCount);
-              Items[i].AddModuleName(lvTModuleList.Items[j].SubItems[2]);
+              Items[i].AddModuleName('['+lvTModuleList.Items[j].SubItems[2]+']');
             end;
           end;
     end;
@@ -487,6 +511,13 @@ begin
   dayPick := myUtilitise.GetValueCheckListBox(chklstDays);
 end;
 
+procedure TFSetting.chkMailClick(Sender: TObject);
+begin
+  edtadminMail.Enabled:=True;
+  mmoMailBody.Enabled:=true;
+
+end;
+
 procedure TFSetting.dtpSStartDateChange(Sender: TObject);
 begin
   dtpDatePick := DateToStr(dtpSStartDate.Date);
@@ -507,6 +538,7 @@ begin
   begin
 
     for i := 0 to lvErrorKeys.Items.Count - 1 do
+    begin
       if SameText(lvErrorKeys.Items[i].SubItems[0], edtkeySearch.Text) then
       begin
         lvErrorKeys.Items[i].Selected := true;
@@ -514,6 +546,7 @@ begin
         lvErrorKeys.SetFocus;
         break;
       end;
+    end;
   end;
 end;
 
@@ -535,6 +568,9 @@ begin
   btnConnect.Enabled := False;
   btnMailApply.Enabled := False;
 
+  edtadminMail.Enabled:=False;
+  mmoMailBody.Enabled:=False;
+
   cbbSSL.Text := 'True';
   pnlRSetting.Visible := true;
   pnlErrorSetting.Visible := False;
@@ -546,9 +582,12 @@ begin
 end;
 
 procedure TFSetting.FormShow(Sender: TObject);
-var   j,k,i,z,ServerCount,schModuleCount,schTaskCount,schModuleTaskList: Integer;
+var   j,k,i,z,mCount,ServerCount,schModuleCount,schModuleTaskList: Integer;
+  temp:String;
 begin
-init;
+  init;
+  temp:='';
+  mCount:=0;
   i := 1;
   schModuleCount:=sUserTemp.getModuleList.getModuleInfo.Count;
   schTaskCount:=sUserTemp.getSetting.getScheduleSetting.getTask.Count;
@@ -571,8 +610,19 @@ init;
           SubItems.Add(IntToStr(Getport));
           SubItems.Add(BoolToStr(Getsecure));
           SubItems.Add(BoolToStr(Getprimary));
+          if Getprimary then // SetPrimary Mail For Sending Mail
+          begin
+            HostPrimary:=Gethost;
+            PortPrimary:=Getport;
+            SSLPrimary:=Getsecure;
+          end;
         end;
       end;
+    end;
+    with sUserTemp.getSetting.getEmailSetting.getAccount do
+    begin
+      USPrimary:=Getusername;
+      PWDPrimary:=Getpassword;
     end;
   end;
 
@@ -611,11 +661,29 @@ init;
         with sUserTemp.getSetting.getScheduleSetting.getTask.Items[z] do
         begin
           Caption:=IntToStr(z+1);
-          SubItems.Add(Gettschedule);
+          SubItems.Add(Getname);
           SubItems.Add(Getttype);
           SubItems.Add(GetsDate);
           SubItems.Add(GetsTime);
-          SubItems.Add(IntToStr(0));
+        end;
+        // Transfer data to AutoSchedule Setting
+        temp:='';
+        with sUserTemp.getSetting.getScheduleSetting.getTask.Items[z] do
+        begin
+          i:=1;
+          while(true) do
+          begin
+            if StrGrab(GetModuleNameList.Text, '[', ']', i) ='' then
+            begin
+              Break;
+            end else
+            begin
+              temp:=temp+','+StrGrab(GetModuleNameList.Text, '[', ']', i);
+            end;
+            Inc(i);
+          end;
+          SubItems.Add(IntToStr(i-1));
+          SubItems.Add(temp);
         end;
       end;
     end;
@@ -640,19 +708,8 @@ init;
       end;
     end;
   end;
-
-  // Transfer data to AutoSchedule Setting
-  //"khmer24WB\r\ncamhr\r\n"
-  for i := 0 to schTaskCount do
-  begin
-    with sUserTemp.getSetting.getScheduleSetting.getTask.Items[i] do
-    begin
-      //ShowMessage(IntToStr(GetModuleNameList.Count));
-      GetModuleNameList.Strings[0];
-    end;
-
-  end;
   //-----------------------------------
+
 end;
 
 procedure TFSetting.init;
@@ -770,12 +827,17 @@ end;
 
 procedure TFSetting.lvTaskListSelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
-var i,amountMls:Integer;
+var i,j,k,amountMls:Integer;
+mExit:String;
 begin
   if lvTaskList.Selected<>nil then
   begin
     amountMls:=StrToInt(lvTaskList.Selected.SubItems[4]);
     TISID:=lvTaskList.Selected.Index;
+    for i:=0 to lvTModuleList.Items.Count-1 do
+      begin
+        lvTModuleList.Items[i].Checked:=False;
+      end;
     if amountMls = 0 then
     begin
      for i:=0 to lvTModuleList.Items.Count-1 do
@@ -784,6 +846,18 @@ begin
       end;
     end else begin
       // Mark on Module item check
+     for i:=0 to schTaskCount do
+      begin
+        mExit:=StrGrab(sUserTemp.getSetting.getScheduleSetting.getTask.Items[TISID].GetModuleNameList.Text, '[', ']', i+1);
+        for j := 0 to lvTModuleList.Items.Count-1 do
+        begin
+          if SameText(mExit,lvTModuleList.Items[j].SubItems[2]) then
+          begin
+            lvTModuleList.Items[j].Checked:=true;
+          end;
+        end;
+
+      end;
     end;
     btnTSave.Enabled:=True;
   end;

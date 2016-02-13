@@ -773,6 +773,8 @@ begin
                            (task.Get('time').JsonValue as TJsonString).Value,
                            (task.Get('execute').JsonValue as TJSONString).Value
                             );
+
+
                   end
                   else
                     if SameText(temp1,'oneTime') then
@@ -795,7 +797,8 @@ begin
                            (task.Get('name').JsonValue as TJsonString).Value,
                             TTaskType.onSchedule,
                             TScheduleType.onDaily,
-                           (task.Get('date').JsonValue as TJsonString).Value,
+                           //(task.Get('date').JsonValue as TJsonString).Value,
+                           'NA',
                            (task.Get('time').JsonValue as TJsonString).Value,
                            (task.Get('execute').JsonValue as TJSONString).Value
                             );
@@ -808,11 +811,13 @@ begin
                            (task.Get('name').JsonValue as TJsonString).Value,
                             TTaskType.onSchedule,
                             TScheduleType.onWeekly,
-                           (task.Get('date').JsonValue as TJsonString).Value,
+                           //(task.Get('date').JsonValue as TJsonString).Value,
+                           'NA',
                            (task.Get('time').JsonValue as TJsonString).Value,
                            (task.Get('execute').JsonValue as TJSONString).Value
                             );
                         end;
+                        getTask.Items[i].GetModuleNameList.Add((task.Get('module').JsonValue as TJSONString).Value);
               end
               else
                 // Check task type = onLogon
@@ -836,6 +841,7 @@ begin
                             'NA',
                             (task.Get('execute').JsonValue as TJSONString).Value
                     );
+                    getTask.Items[i].GetModuleNameList.Add((task.Get('module').JsonValue as TJSONString).Value);
                 end
                 else
                   // Check task type = onStartup
@@ -860,6 +866,7 @@ begin
                             (task.Get('execute').JsonValue as TJSONString).Value
                     );
                       //addTask(1,'',TTaskType.onStartUp,TScheduleType.Undefine);
+                      getTask.Items[i].GetModuleNameList.Add((task.Get('module').JsonValue as TJSONString).Value);
                   end;
             end;
         end;
