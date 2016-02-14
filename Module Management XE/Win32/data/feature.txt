@@ -1,0 +1,6 @@
+SAMS has many features, but mainly includes 5 features such as User Configurations Setting, Module Setting, Error Setting, Mail Setting, and Automatic Schedule Setting. 
+For User Configuration Setting, SAMS’s application provides the developers and users many useful functions such as defining role, user’s privilege and user’s action. For defining role, we divide into 3 main types like administrator, developer and end-user with different privilege based on the hierarchy. Moreover, every user can have actions as well as run temporary module test, creating or checking module.
+For Module setting, SAMS’s application provide the using the module naming system with comprehensive name. 
+For Error setting, SAMS’s application allows the user to search or check on the error module with clearly explain definition and cause.
+For Mail setting, SAMS’s application can define by the user’s favorite usage. Currently, we provide the three type mail sender such as yahoo mail, google mail, or custom which user can define its own mail to send.	 	   
+For Automatic schedule setting, SAMS’s application allows users to monitor module scraping automatically based on the schedule running task with user’s define.

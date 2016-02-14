@@ -8,12 +8,12 @@ uses
   fileCore = '../data/core.txt';
   fileLog = '../data/log/';}
 var
-  fileCore:String='\data\core.txt';
-  fileLog:string='\data\';
-  FileKey:String= '\data\key.txt';
-  FileAbout:String='\data\about.txt';
-  FileFeatue:String='\data\feature.txt';
-  FileLogo:String='\data\logo.jpeg';
+  fileCore:String='data\core.txt';
+  fileLog:string='data\';
+  FileKey:String= 'data\key.txt';
+  FileAbout:String='data\about.txt';
+  FileFeatue:String='data\feature.txt';
+  FileLogo:String='data\logo.jpeg';
   sUserTemp:TUser;
   myemail: IMail;
   myUtilitise: TUtilitise;

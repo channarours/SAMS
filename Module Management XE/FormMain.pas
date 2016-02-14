@@ -517,7 +517,9 @@ begin
   end;
 
   // Temporaray Module
-  if frmTemporary.modules.getModuleList.Count > 0 then
+  if frmTemporary.modules <> nil then
+  begin
+    if frmTemporary.modules.getModuleList.Count > 0 then
   begin
     with frmTemporary.modules.getModuleList do
     begin
@@ -542,6 +544,7 @@ begin
         end;
         frmTemporary.lvTMList.Refresh;
     end;
+  end;
   end;
 end;
 
