@@ -118,6 +118,8 @@ var
   TMSetting: TFSetting;
   FmyUser: TUser;
   robotGo:Boolean;
+  //Mail
+  BodyResult,Mc,Mr,Mv,Md,Mt:String;
 implementation
 uses
   drawprogressU;
@@ -151,6 +153,7 @@ type
 var
    ExModulelist:TExModuleList;
    ModuleList:TExModuleList; // ArrayList **************
+
 {$R *.dfm}
 { Execute Module list ------> }
 procedure TExModuleList.setModule(I: Integer; obj: TModule);
@@ -671,22 +674,42 @@ procedure TMainForm.sendMail;
 var t:string;
 i:Integer;
 begin
-  Sleep(10000);
+    with lvModule.Items do
+    begin
+      if Count = 0 then
+      begin
+        //
+      end
+      else
+      begin
+        for i := 0 to Count-1 do
+        begin
+          if Item[i].Checked then
+          begin
+          Md := DateTimeToStr(Now);
+          Mc := Item[i].SubItems[3];
+          Mr := Item[i].SubItems[5];
+          Mt := item[i].SubItems[5];
+          Mv := Item[i].SubItems[6];
+          if Length(Mv) = 0 then
+            Mv := 'NULL';
+
+          DTable.drawRow(IntToStr(i + 1), Md, Mc, Mv, Mt, Mr);
+        end;
+          end;
+          end;
+          DTable.saveToFile;
+        end;
+
+  Sleep(1000);
   myemail.setServer(HostPrimary);
   myemail.setPort(PortPrimary);
   myemail.setTLS(SSLPrimary);
   myemail.connect(USPrimary, PWDPrimary);
-  myemail.isAuthentication;
+//  myemail.isAuthentication;
   myemail.setFrom('Semi-Automatic Module System', USPrimary); //edtadminMail.Text);
   myemail.setReception('SAMS', sUserTemp.UserName);
-  myemail.send('Semi-Automatic Module System', sUserTemp.UserName,AppPath+'\Logs\TTT.txt'); //mmoMailBody.Text);
-//  t:='HostPrimary :'+HostPrimary+'/'
-//  +'PortPrimary :'+IntToStr(PortPrimary)+'/'
-//  +'SSLPrimary :'+BoolToStr(SSLPrimary)+'/'
-//  +'USPrimary :'+USPrimary+'/'
-//  +'PWDPrimary :'+PWDPrimary+'/'
-//  +'Send To :'+sUserTemp.UserName+'/'
-//  +'Body :'+sUserTemp.Password;
+  myemail.send('Semi-Automatic Module System', sUserTemp.UserName,ModuleLog); //mmoMailBody.Text);
 
 end;
 
@@ -869,6 +892,7 @@ begin
         end;
       end;
     end;
+
     // Total module to be run
     count := sUserTemp.getModuleProcessList.getProcess.Count;
     thread:= sUserTemp.getSetting.getModuleSetting.Getthread;
@@ -994,7 +1018,6 @@ begin
         end;
       end;
     end;
-
   except
     ShowMessage('Start Error...');
   end;
@@ -1006,7 +1029,7 @@ begin
   if robotGo then
   begin
     //MainForm.sendMail;
-    uSaveFile('TTT.txt',MainForm.ReturnProcess);
+    //uSaveFile('TTT.txt',MainForm.ReturnProcess);
     MainForm.sendMail;
   end;
 end;

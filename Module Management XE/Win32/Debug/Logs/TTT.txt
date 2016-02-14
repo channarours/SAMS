@@ -1,0 +1,22 @@
+Module Name: camhr
+Result : Result1=channaroursResult2=Result3=Result4=Result5=Result6=Result7=Result8=Result9=Result10=Result11=Result12=Result13=Result14=Result15=Result16=Result17=Result18=Result19=
+Step   : SStatus[camhr : End](100)*Running*
+
+Module Name: yahooMA
+Result : 
+Step   : SStatus[yahooMA : Login](45)*Running*
+
+Module Name: yahooMA
+Result : 
+Step   : SStatus[yahooMA : Login](45)*Running*
+Module Name: camhr
+Result : Result1=channaroursResult2=Result3=Result4=Result5=Result6=Result7=Result8=Result9=Result10=Result11=Result12=Result13=Result14=Result15=Result16=Result17=Result18=Result19=
+Step   : SStatus[camhr : End](100)*Running*
+
+Module Name: yahooMA
+Result : 
+Step   : SStatus[yahooMA : Login](45)*Running*
+Module Name: camhr
+Result : Result1=channaroursResult2=Result3=Result4=Result5=Result6=Result7=Result8=Result9=Result10=Result11=Result12=Result13=Result14=Result15=Result16=Result17=Result18=Result19=
+Step   : SStatus[camhr : End](100)*Running*
+

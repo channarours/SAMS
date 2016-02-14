@@ -2,7 +2,7 @@ unit MyObject;
 
 interface
 uses
-  MySetting,MyMail,uUtilitise,System.SysUtils,Vcl.Forms;
+  MySetting,MyMail,uUtilitise,System.SysUtils,Vcl.Forms,UTblCreate;
 
 {const
   fileCore = '../data/core.txt';
@@ -14,10 +14,12 @@ var
   FileAbout:String='data\about.txt';
   FileFeatue:String='data\feature.txt';
   FileLogo:String='data\logo.jpeg';
+  ModuleLog:string;
   sUserTemp:TUser;
   myemail: IMail;
   myUtilitise: TUtilitise;
   myJsoun: TJsonUtility;
+   DTable:TDrawTable;
   str:String;
 function updateData:Boolean;
 function getData:Boolean;
@@ -56,6 +58,10 @@ begin
   FileAbout:=ExtractFilePath(Application.ExeName)+FileAbout;
   FileFeatue:=ExtractFilePath(Application.ExeName)+FileFeatue;
   FileLogo:=ExtractFilePath(Application.ExeName)+FileLogo;
+  ModuleLog:=ExtractFileDir(Application.ExeName)+'\ModuleLogs_'+formatdatetime('dd-mm-yy[hh_nn_ss]', Now)+'.log';
+  DTable:=TDrawTable.create;
+  DTable.initTbl();
+  DTable.setFilePath(ModuleLog);
   //ShowMessage(ExtractFilePath(Application.ExeName));
   try
     begin
